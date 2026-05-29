@@ -958,8 +958,8 @@ function registerEventListeners() {
 async function initSystem() {
     registerEventListeners();
     
-    // Check if hosted over HTTPS (which blocks fetching localhost HTTP API due to mixed content rules)
-    if (window.location.protocol === 'https:') {
+    // Check if hosted over HTTPS and API is using insecure HTTP (mixed content warning)
+    if (window.location.protocol === 'https:' && API_BASE.startsWith('http://')) {
         const banner = document.getElementById('https-warning-banner');
         if (banner) banner.classList.remove('hidden');
     }
