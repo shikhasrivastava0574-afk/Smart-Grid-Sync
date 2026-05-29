@@ -3,7 +3,7 @@
  * Connects UI elements to Python FastAPI endpoints
  */
 
-const API_BASE = "http://localhost:8000/api";
+const API_BASE = "https://smart-grid-sync-1.onrender.com/api";
 
 // Initialize UI configuration state
 let isTraining = false;
