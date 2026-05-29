@@ -958,6 +958,12 @@ function registerEventListeners() {
 async function initSystem() {
     registerEventListeners();
     
+    // Check if hosted over HTTPS (which blocks fetching localhost HTTP API due to mixed content rules)
+    if (window.location.protocol === 'https:') {
+        const banner = document.getElementById('https-warning-banner');
+        if (banner) banner.classList.remove('hidden');
+    }
+    
     // Initial fetch to load grid state
     await fetchGridStatus();
     await fetchGridHistory();

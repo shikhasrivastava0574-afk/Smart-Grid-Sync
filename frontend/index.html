@@ -12,6 +12,11 @@
 </head>
 <body>
     <div class="app-container">
+        <!-- Mixed Content Warning Banner (visible only if secure HTTPS pages fail to fetch insecure HTTP localhost API) -->
+        <div id="https-warning-banner" class="warning-banner hidden">
+            ⚠️ <strong>Mixed Content Alert:</strong> You are accessing this dashboard over secure HTTPS, but your backend runs locally over HTTP. The browser is blocking API requests. Please open the dashboard locally at <a href="http://localhost:8080" class="banner-link">http://localhost:8080</a> to resolve this.
+        </div>
+
         <!-- Main Header -->
         <header class="main-header">
             <div class="brand">
