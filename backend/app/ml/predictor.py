@@ -227,8 +227,8 @@ def train_forecaster(model_type: str, simulator: SmartGridSimulator):
     
     if model_type == "lstm":
         # PureMLP serves as our neural network predictor
-        model_load = PureMLP(hidden_dim=32, lr=0.005, epochs=100)
-        model_solar = PureMLP(hidden_dim=32, lr=0.005, epochs=100)
+        model_load = PureMLP(hidden_dim=32, lr=0.03, epochs=1000)
+        model_solar = PureMLP(hidden_dim=32, lr=0.03, epochs=1000)
     elif model_type == "xgboost":
         # PureDecisionTree serves as our tree regressor (stair-step curve visualizer)
         model_load = PureDecisionTree(max_depth=5)

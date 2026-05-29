@@ -1,0 +1,20 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Databases
+*.db
+*.sqlite3
+
+# Saved ML models
+*.pkl
+*.pt
+*.pth
+scaler.pkl
+
+# IDE / OS metadata
+.DS_Store
+.vscode/
+.idea/
