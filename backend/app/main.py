@@ -3,6 +3,7 @@ import time
 import math
 import random
 import json
+import os
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 
@@ -341,9 +342,17 @@ class SmartGridAPIHandler(BaseHTTPRequestHandler):
 
 
 def run_server():
-    server_address = ('127.0.0.1', 8000)
+    port_env = os.environ.get("PORT")
+    if port_env:
+        port = int(port_env)
+        host = "0.0.0.0"
+    else:
+        port = 8000
+        host = "127.0.0.1"
+    
+    server_address = (host, port)
     httpd = HTTPServer(server_address, SmartGridAPIHandler)
-    print("Serving Smart Grid Sync API on http://127.0.0.1:8000")
+    print(f"Serving Smart Grid Sync API on http://{host}:{port}")
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
