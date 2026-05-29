@@ -1,59 +1,73 @@
-# Smart Grid Sync: AI-Driven Smart Grid Optimization
+# Smart Grid Sync: Full-Stack AI-Driven Grid Optimization
 
-Smart Grid Sync is a dynamic, high-fidelity interactive dashboard demonstrating the convergence of machine learning, time-series forecasting, smart grid analytics, and sustainability. It provides a real-time simulation of an electrical grid, demonstrating how dynamic electricity pricing, AI forecasting, battery storage systems, and renewable energy integration cooperate to maintain grid stability.
+Smart Grid Sync is a dynamic, production-scale full-stack framework showing the convergence of machine learning, time-series forecasting, smart grid analytics, and sustainability. The application features a multithreaded **Python FastAPI backend**, a **relational database (SQLite)**, and **custom machine learning forecasting models built from scratch in NumPy**.
 
-🎯 **Live Dashboard**: [https://shikhasrivastava0574-afk.github.io/Smart-Grid-Sync/](https://shikhasrivastava0574-afk.github.io/Smart-Grid-Sync/)
-
----
-
-## Key Features
-
-### 📈 1. Time Series Forecasting & Analytics
-Includes real-time, interactive forecasting models predicting grid behavior 24 hours ahead:
-* **Deep Neural Network (MLP)**: Feedforward neural network capturing non-linear weather features.
-* **Holt-Winters (ETS)**: Statistical time-series model capturing 24h diurnal electrical usage cycles.
-* **Ridge Regression**: Linear model with L2 regularization showing weather parameter feature weights.
-
-### 🔋 2. Smart Grid Analytics & Storage Integration
-* Utility-scale Energy Storage System (ESS) battery charging and discharging logic.
-* Auto Dispatch mode (recharges during solar/wind surplus, discharges to support load during peak pricing).
-* Manual control override modes (Force Charge, Force Discharge, System Hold).
-* Grid Frequency tracking (Hz) reflecting grid load balance.
-
-### ⚡ 3. Dynamic Electricity Pricing Engine
-* Calculates tariffs in real-time based on supply/demand ratio and transmission line congestion.
-* Allows negative electricity rates (surplus pricing) to incentivize consumer demand shifting.
-
-### 🌱 4. Sustainability & Carbon Tracking
-* Tracks grid carbon intensity ($g\text{ CO}_2/\text{kWh}$).
-* Displays carbon emissions saved (kg) and solar/wind energy curtailment indicators.
-* Displays live dispatch recommendations from the grid advisor.
+🎯 **Live Repository**: [https://github.com/shikhasrivastava0574-afk/Smart-Grid-Sync](https://github.com/shikhasrivastava0574-afk/Smart-Grid-Sync)
 
 ---
 
-## File Structure
+## Technical Architecture
 
-* **`index.html`**: Structured layout of KPI readouts, custom SVG chart containers, and control sliders.
-* **`styles.css`**: CSS styling featuring a premium glassmorphic dark theme, glowing neon elements, and keyframe animations.
-* **`app.js`**: Core state loop, timeline engine, mathematical modeling, custom SVG vector graphing, and DOM bindings.
+The framework is decoupled into a clear client-server architecture:
+
+```
+├── backend/
+│   ├── app/
+│   │   ├── ml/
+│   │   │   └── predictor.py   <-- Custom NumPy ML algorithms from scratch
+│   │   ├── database.py        <-- SQLite database initialization and sessions
+│   │   ├── main.py            <-- FastAPI endpoints & multithreaded simulator daemon
+│   │   ├── schemas.py         <-- Pydantic request/response validation schemas
+│   │   └── simulator.py       <-- Grid state logic (battery, pricing, load curves)
+│   └── requirements.txt       <-- Python dependency library configurations
+└── frontend/
+    ├── index.html             <-- UI layout for KPI readouts and SVG chart canvases
+    ├── styles.css             <-- Glassmorphic dark theme and glows
+    └── app.js                 <-- AJAX fetch API client and SVG charting engine
+```
+
+### 1. High-Performance Python Backend
+* Powered by **FastAPI** and **Uvicorn** for high-throughput concurrency.
+* Exposes RESTful endpoints to adjust parameters, fetch metrics, train models, and load predictions.
+* Advances the grid timeline inside a background daemon thread, recording metrics to database tables.
+
+### 2. Active Relational Database Layer
+* Employs Python's standard `sqlite3` module to record grid metrics (`grid_metrics` table) every 10 simulated minutes.
+* Resolves package compilation and version conflicts on **Python 3.14** by avoiding heavy external ORMs.
+* Swappable to **PostgreSQL** in production by editing the connection string in `database.py`.
+
+### 3. Custom NumPy Machine Learning from Scratch
+To bypass heavy, compiler-dependent ML library installations, the forecasting regressors are coded in **pure NumPy**:
+* **LSTM Representation (`PureMLP`)**: Feedforward Multi-Layer Perceptron neural network utilizing Glorot weight initializations, a ReLU hidden activation layer (32 nodes), and backpropagation gradient updates.
+* **XGBoost Representation (`PureDecisionTree`)**: A decision tree regressor using variance-reduction splitting search. Replicates XGBoost stair-step forecasting predictions.
+* **Baseline (`PureRidge`)**: Linear Ridge regression solving L2 regularized normal equations.
 
 ---
 
-## How to Run Locally
+## Getting Started
 
-Since this project has zero external package dependencies, you can run it directly on your machine without compilation.
+### Prerequisites
+Make sure you have Python 3 installed. Navigate to the project root:
+```bash
+cd Smart-Grid-Sync
+```
 
-1. Navigate to the project directory:
-   ```bash
-   cd smart-grid-sync
-   ```
+### 1. Start the Backend Server
+Install the lightweight requirements and launch the FastAPI server:
+```bash
+# Install dependencies
+pip install -r backend/requirements.txt
 
-2. Start a local server:
-   ```bash
-   python3 -m http.server 8000
-   ```
+# Start FastAPI application
+python3 -m uvicorn backend.app.main:app --port 8000
+```
+The interactive API documentation will be available at **[http://localhost:8000/docs](http://localhost:8000/docs)**.
 
-3. Open your browser and navigate to:
-   ```
-   http://localhost:8000
-   ```
+### 2. Serve the Frontend Dashboard
+In a new terminal window, serve the frontend files:
+```bash
+# Serve frontend folder
+python3 -m http.server 8080 --directory frontend
+```
+Open your browser and navigate to:
+👉 **[http://localhost:8080](http://localhost:8080)**
