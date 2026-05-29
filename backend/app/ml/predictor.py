@@ -37,7 +37,7 @@ class PureRidge:
 
 class PureMLP:
     """Feedforward Multi-Layer Perceptron Neural Network Regressor (1 Hidden Layer with ReLU)"""
-    def __init__(self, hidden_dim=32, lr=0.005, epochs=100):
+    def __init__(self, hidden_dim=32, lr=0.01, epochs=100):
         self.hidden_dim = hidden_dim
         self.lr = lr
         self.epochs = epochs
@@ -45,11 +45,29 @@ class PureMLP:
         self.b1 = None
         self.W2 = None
         self.b2 = None
+        self.x_mean = None
+        self.x_std = None
+        self.y_mean = None
+        self.y_std = None
 
     def fit(self, X, y):
+        # Calculate normalization statistics
+        self.x_mean = np.mean(X, axis=0)
+        self.x_std = np.std(X, axis=0)
+        self.x_std[self.x_std == 0.0] = 1.0
+        
+        self.y_mean = np.mean(y)
+        self.y_std = np.std(y)
+        if self.y_std == 0.0:
+            self.y_std = 1.0
+
+        # Scale features and targets
+        X_scaled = (X - self.x_mean) / self.x_std
+        y_scaled = (y - self.y_mean) / self.y_std
+        y_col = y_scaled.reshape(-1, 1)
+
         np.random.seed(42)
-        n_samples, n_features = X.shape
-        y_col = y.reshape(-1, 1)
+        n_samples, n_features = X_scaled.shape
 
         # Xavier/Glorot Weight Initialization
         self.W1 = np.random.randn(n_features, self.hidden_dim) * np.sqrt(2.0 / n_features)
@@ -60,7 +78,7 @@ class PureMLP:
         # Basic batch gradient descent training loop
         for _ in range(self.epochs):
             # Forward propagation
-            z1 = X.dot(self.W1) + self.b1
+            z1 = X_scaled.dot(self.W1) + self.b1
             a1 = np.maximum(0, z1) # ReLU activation
             y_pred = a1.dot(self.W2) + self.b2
 
@@ -74,7 +92,7 @@ class PureMLP:
             da1 = dy.dot(self.W2.T)
             dz1 = da1 * (z1 > 0) # ReLU derivative
             
-            dW1 = X.T.dot(dz1)
+            dW1 = X_scaled.T.dot(dz1)
             db1 = np.sum(dz1, axis=0, keepdims=True)
 
             # Update weights using SGD optimizer
@@ -84,10 +102,15 @@ class PureMLP:
             self.b2 -= self.lr * db2
 
     def predict(self, X):
-        z1 = X.dot(self.W1) + self.b1
+        if self.x_mean is None:
+            return np.zeros(X.shape[0])
+        # Scale features and execute prediction
+        X_scaled = (X - self.x_mean) / self.x_std
+        z1 = X_scaled.dot(self.W1) + self.b1
         a1 = np.maximum(0, z1)
         y_pred = a1.dot(self.W2) + self.b2
-        return y_pred.flatten()
+        # Scale back to output scale
+        return (y_pred.flatten() * self.y_std) + self.y_mean
 
 
 class PureDecisionTree:
