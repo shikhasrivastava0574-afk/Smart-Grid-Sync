@@ -137,7 +137,9 @@ class SmartGridAPIHandler(BaseHTTPRequestHandler):
         parsed_url = urlparse(self.path)
         path = parsed_url.path
 
-        if path == "/api/grid/status":
+        if path == "/" or path == "":
+            self.handle_get_root()
+        elif path == "/api/grid/status":
             self.handle_get_status()
         elif path == "/api/grid/history":
             self.handle_get_history()
@@ -174,6 +176,21 @@ class SmartGridAPIHandler(BaseHTTPRequestHandler):
     # ==========================================================================
     # ENDPOINT ROUTERS
     # ==========================================================================
+
+    def handle_get_root(self):
+        response_data = {
+            "status": "online",
+            "message": "Smart Grid Sync API is running successfully.",
+            "endpoints": [
+                "/api/grid/status",
+                "/api/grid/history",
+                "/api/grid/forecast"
+            ]
+        }
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(json.dumps(response_data).encode('utf-8'))
 
     def handle_get_status(self):
         conn = get_db_connection()
