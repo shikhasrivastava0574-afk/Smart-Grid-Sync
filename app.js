@@ -35,7 +35,7 @@ class GridState {
         this.currentScenario = 'normal';
         
         // ML Model Sandbox Parameters
-        this.selectedModel = 'mlp';
+        this.selectedModel = 'lstm';
         this.isTraining = false;
         this.trainingEpoch = 0;
         this.trainingLoss = 0.0241;
@@ -222,23 +222,23 @@ const speedMap = [0, 1, 5, 15, 60]; // minutes per second
 
 // Log messages templates
 const logTemplates = {
-    mlp: [
-        "[AI MLP] Model architecture: 3 Hidden Layers (64, 32, 16) | ReLU Activations",
-        "[AI MLP] Commencing forward propagation with Adam optimizer (lr=0.005)",
-        "[AI MLP] Batch processing: size=32 | Epochs training standard: 100",
-        "[AI MLP] Loss stabilizing. Adjusting node weights based on weather gradient...",
-        "[AI MLP] Epoch 50/100 -> Training MSE: 0.0841 | Val MSE: 0.0911",
-        "[AI MLP] Decay rate trigger. Learning rate set to 0.001",
-        "[AI MLP] Training convergence reached at Epoch 100.",
-        "[AI MLP] Model weights deployed! 24h forecasting metrics updated."
+    lstm: [
+        "[AI LSTM] Model: Deep Recurrent LSTM Network | Input sequence: (24, 7)",
+        "[AI LSTM] Initializing gate weights (Input, Forget, Output, Cell state)...",
+        "[AI LSTM] Backpropagation Through Time (BPTT) active with Adam optimizer.",
+        "[AI LSTM] Hidden state dim: 64 | Cell state dim: 64 | Epochs: 100",
+        "[AI LSTM] Epoch 50/100 -> Training RMSE: 0.0215 | Validation RMSE: 0.0242",
+        "[AI LSTM] Resolving gradient explosion via Gradient Clipping (limit=1.0)...",
+        "[AI LSTM] Training loss convergence achieved at Epoch 100.",
+        "[AI LSTM] LSTM temporal forecast vector deployed to load grid."
     ],
-    hw: [
-        "[AI ETS] Holt-Winters triple exponential smoothing model active.",
-        "[AI ETS] Standard parameters: Alpha=0.35 (Level), Beta=0.15 (Trend), Gamma=0.45 (Seasonality)",
-        "[AI ETS] Compiling historical 72h seasonal lag patterns...",
-        "[AI ETS] Computing multiplicative forecast variables for peak demand indices...",
-        "[AI ETS] Seasonality profile mapped: 24h diurnal electrical demand cycle.",
-        "[AI ETS] Forecasting completed. Target vector output populated."
+    xgboost: [
+        "[AI XGB] Model: Gradient Boosted Trees | Objective: reg:squarederror",
+        "[AI XGB] Hyperparameters: learning_rate=0.08, max_depth=6, n_estimators=100",
+        "[AI XGB] Compiling training dataset partitions. Trees building...",
+        "[AI XGB] Tree boosting round 20/100 -> Training Loss: 0.0561",
+        "[AI XGB] Feature importances calculated: Hour: 44%, Temp: 38%, CloudCover: 18%",
+        "[AI XGB] Ensembling complete. Predictor tree array constructed."
     ],
     linear: [
         "[AI RIDGE] Model selection: Ridge Linear Regression (Alpha=1.0 regularizer)",
@@ -825,15 +825,16 @@ function generate24hForecast() {
 
         // Add subtle offsets depending on selected machine learning model to simulate algorithmic behaviors
         let modelDeviation = 0.0;
-        if (grid.selectedModel === 'hw') {
-            // Holt Winters forecast oscillation smoothing lags
-            modelDeviation = Math.cos((forecastHour - 4) / 24 * 2 * Math.PI) * 1.8;
+        if (grid.selectedModel === 'xgboost') {
+            // XGBoost exhibits a stair-stepped/blocky curve because of decision tree step predictions
+            const blockyHour = Math.floor(forecastHour / 2) * 2;
+            modelDeviation = Math.cos((blockyHour - 4) / 24 * 2 * Math.PI) * 2.2 + (Math.sin(forecastHour) > 0 ? 0.8 : -0.8);
         } else if (grid.selectedModel === 'linear') {
             // Underfitting error curves
             modelDeviation = Math.sin(forecastHour / 4) * 3.5;
         } else {
-            // Deep Learning MLP - Highly accurate approximation
-            modelDeviation = Math.sin((forecastHour - 2) / 6) * 0.6;
+            // LSTM - Highly accurate, smooth time-series sequence prediction
+            modelDeviation = Math.sin((forecastHour - 2) / 6) * 0.45;
         }
         
         loadPredict += modelDeviation;
@@ -1187,7 +1188,7 @@ function runModelTraining() {
     elements.trainingStatus.textContent = "TRAINING...";
     elements.trainingStatus.className = "console-status-text training";
     
-    const logs = logTemplates[grid.selectedModel] || logTemplates.mlp;
+    const logs = logTemplates[grid.selectedModel] || logTemplates.lstm;
     appendConsoleLog(`\n[SYSTEM] Triggered training routine for model type: ${grid.selectedModel.toUpperCase()}...`);
     
     let logIdx = 0;
@@ -1204,8 +1205,8 @@ function runModelTraining() {
             elements.trainingStatus.textContent = "Model Up-To-Date";
             elements.trainingStatus.className = "console-status-text idle";
             
-            grid.trainingLoss = grid.selectedModel === 'mlp' ? 0.0241 : (grid.selectedModel === 'hw' ? 0.0514 : 0.0822);
-            grid.trainingValLoss = grid.selectedModel === 'mlp' ? 0.0264 : (grid.selectedModel === 'hw' ? 0.0581 : 0.0914);
+            grid.trainingLoss = grid.selectedModel === 'lstm' ? 0.0215 : (grid.selectedModel === 'xgboost' ? 0.0482 : 0.0822);
+            grid.trainingValLoss = grid.selectedModel === 'lstm' ? 0.0242 : (grid.selectedModel === 'xgboost' ? 0.0561 : 0.0914);
             
             elements.mValEpochs.textContent = "100 / 100";
             elements.mValLoss.textContent = grid.trainingLoss.toFixed(4);
@@ -1220,7 +1221,7 @@ function runModelTraining() {
         
         // Animate simulated losses decreasing exponentially
         const startLoss = 0.35;
-        const finalLoss = grid.selectedModel === 'mlp' ? 0.0241 : (grid.selectedModel === 'hw' ? 0.0514 : 0.0822);
+        const finalLoss = grid.selectedModel === 'lstm' ? 0.0215 : (grid.selectedModel === 'xgboost' ? 0.0482 : 0.0822);
         const progress = grid.trainingEpoch / 100;
         const currentLoss = startLoss - (startLoss - finalLoss) * Math.pow(progress, 0.5);
         const currentValLoss = currentLoss * 1.1;
