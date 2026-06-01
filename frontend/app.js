@@ -242,7 +242,7 @@ function updateUIElements(data) {
 
     // 3. KPI Pricing
     elements.valDynamicPrice.textContent = data.dynamic_price.toFixed(3);
-    elements.valAvgPrice.textContent = `$${data.avg_price.toFixed(3)}/kWh`;
+    elements.valAvgPrice.textContent = `₹${data.avg_price.toFixed(3)}/kWh`;
     
     // Adjust warning tier colors
     if (data.dynamic_price > 0.22) {
@@ -333,7 +333,7 @@ function triggerAdvisoryLog(data) {
         items.push({
             type: "warning",
             icon: "🚨",
-            text: `High pricing event ($${data.dynamic_price.toFixed(3)}/kWh). Peak hours demand mitigation recommended. Dispatch batteries immediately.`
+            text: `High pricing event (₹${data.dynamic_price.toFixed(3)}/kWh). Peak hours demand mitigation recommended. Dispatch batteries immediately.`
         });
     }
 
@@ -377,7 +377,7 @@ function triggerAdvisoryLog(data) {
         items.push({
             type: "normal",
             icon: "💡",
-            text: `Grid normal. Frequency standard at ${data.grid_frequency.toFixed(2)} Hz. Pricing dynamic controls holding at $${data.dynamic_price.toFixed(3)}/kWh.`
+            text: `Grid normal. Frequency standard at ${data.grid_frequency.toFixed(2)} Hz. Pricing dynamic controls holding at ₹${data.dynamic_price.toFixed(3)}/kWh.`
         });
         items.push({
             type: "normal",
@@ -633,7 +633,7 @@ function setupTooltipHandlers() {
             <div class="row"><span>Solar:</span><span class="val text-solar">${data.solar.toFixed(1)} MW</span></div>
             <div class="row"><span>Wind:</span><span class="val text-wind">${data.wind.toFixed(1)} MW</span></div>
             <div class="row"><span>Battery:</span><span class="val text-battery">${data.battery.toFixed(1)} MW</span></div>
-            <div class="row"><span>Tariff:</span><span class="val text-pink">$${data.price.toFixed(3)}/kWh</span></div>
+            <div class="row"><span>Tariff:</span><span class="val text-pink">₹${data.price.toFixed(3)}/kWh</span></div>
         `;
     });
 
@@ -670,7 +670,7 @@ function setupTooltipHandlers() {
             <div class="title">${data.time_str} (Forecast)</div>
             <div class="row"><span>Demand FC:</span><span class="val text-load">${data.load.toFixed(1)} MW</span></div>
             <div class="row"><span>Solar FC:</span><span class="val text-solar">${data.solar.toFixed(1)} MW</span></div>
-            <div class="row"><span>Price FC:</span><span class="val text-pink">$${data.price.toFixed(3)}/kWh</span></div>
+            <div class="row"><span>Price FC:</span><span class="val text-pink">₹${data.price.toFixed(3)}/kWh</span></div>
         `;
     });
 
