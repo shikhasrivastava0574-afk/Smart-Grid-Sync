@@ -245,13 +245,13 @@ function updateUIElements(data) {
     elements.valAvgPrice.textContent = `₹${data.avg_price.toFixed(3)}/kWh`;
     
     // Adjust warning tier colors
-    if (data.dynamic_price > 0.22) {
+    if (data.dynamic_price > 9.00) {
         elements.valPriceRate.textContent = "PEAK TARIFFS";
         elements.valPriceRate.className = "rate-status red-text";
         elements.barPriceTier.className = "progress-bar-fill pink red-text";
         elements.gridStatus.className = "grid-status-badge pulse-glow red";
         elements.gridStatusText.textContent = "PEAK GRID LOAD";
-    } else if (data.dynamic_price < 0.05) {
+    } else if (data.dynamic_price < 5.00) {
         elements.valPriceRate.textContent = "SURPLUS RATES";
         elements.valPriceRate.className = "rate-status text-green";
         elements.barPriceTier.className = "progress-bar-fill pink text-green";
@@ -264,7 +264,7 @@ function updateUIElements(data) {
         elements.gridStatus.className = "grid-status-badge pulse-glow green";
         elements.gridStatusText.textContent = "GRID OPERATING STABLE";
     }
-    elements.barPriceTier.style.width = `${Math.min(100, ((data.dynamic_price + 0.05) / 0.55) * 100)}%`;
+    elements.barPriceTier.style.width = `${Math.min(100, ((data.dynamic_price - 3.0) / 12.0) * 100)}%`;
 
     // 4. KPI Battery & Grid Health
     elements.valBatterySoc.textContent = data.battery_soc.toFixed(1);
@@ -329,7 +329,7 @@ function triggerAdvisoryLog(data) {
     
     const items = [];
 
-    if (data.dynamic_price > 0.22) {
+    if (data.dynamic_price > 9.00) {
         items.push({
             type: "warning",
             icon: "🚨",
@@ -594,7 +594,7 @@ function drawForecastChart() {
     gridG.appendChild(drawLinePath(localForecast, d => d.solar, minX, maxX, minY, maxY, "chart-path path-solar-forecast"));
     
     // Scale pricing
-    const priceScaleFn = priceVal => (priceVal + 0.05) / 0.55 * 80;
+    const priceScaleFn = priceVal => (priceVal - 3.0) / 12.0 * 60;
     gridG.appendChild(drawLinePath(localForecast, d => priceScaleFn(d.price), minX, maxX, minY, maxY, "chart-path path-price-forecast"));
 }
 

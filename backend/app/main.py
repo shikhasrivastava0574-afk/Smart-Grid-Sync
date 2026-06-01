@@ -198,7 +198,7 @@ class SmartGridAPIHandler(BaseHTTPRequestHandler):
         try:
             cursor.execute("SELECT price FROM grid_metrics")
             prices = [r["price"] for r in cursor.fetchall()]
-            avg_price = sum(prices) / len(prices) if prices else 0.15
+            avg_price = sum(prices) / len(prices) if prices else 6.20
         finally:
             conn.close()
 

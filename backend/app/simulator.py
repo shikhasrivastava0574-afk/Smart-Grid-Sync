@@ -62,9 +62,9 @@ class SmartGridSimulator:
             return 58.0 - (hour - 20) * 3.5
 
     def calculate_price_value(self, net_load, congestion):
-        base_price = 0.12
-        price = base_price + (net_load / 40.0) * 0.08 + congestion * 0.15
-        return max(-0.04, min(0.48, price))
+        base_price = 6.20
+        price = base_price + (net_load / 40.0) * 4.0 + congestion * 3.0
+        return max(3.00, min(16.00, price))
 
     def step(self, speed_minutes):
         # 1. Advance timeline
@@ -165,10 +165,10 @@ class SmartGridSimulator:
             self.carbon_saved += (total_renewables - self.curtailed_renewables) * elapsed_hrs * 450.0 / 1000.0
 
         # Sync visual classes
-        if self.dynamic_price > 0.22:
+        if self.dynamic_price > 9.00:
             self.status_text = "PEAK GRID LOAD"
             self.status_class = "red"
-        elif self.dynamic_price < 0.05:
+        elif self.dynamic_price < 5.00:
             self.status_text = "RENEWABLE SURPLUS"
             self.status_class = "yellow"
         else:
