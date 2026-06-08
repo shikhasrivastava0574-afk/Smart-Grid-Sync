@@ -78,7 +78,13 @@ const elements = {
     valCarbonIntensity: document.getElementById('val-carbon-intensity'),
     barCarbonIntensity: document.getElementById('bar-carbon-intensity'),
     valCo2Saved: document.getElementById('val-co2-saved'),
-    advisorListContainer: document.getElementById('advisor-list-container')
+    advisorListContainer: document.getElementById('advisor-list-container'),
+
+    // Historical Trends
+    trendPeakTime: document.getElementById('trend-peak-time'),
+    trendLoadStats: document.getElementById('trend-load-stats'),
+    trendStability: document.getElementById('trend-stability'),
+    trendAnomalies: document.getElementById('trend-anomalies')
 };
 
 // SVG Settings & Dimensions
@@ -194,6 +200,30 @@ async function fetchGridForecast() {
     }
 }
 
+async function fetchGridTrends() {
+    try {
+        const res = await fetch(`${API_BASE}/grid/trends`);
+        if (!res.ok) throw new Error("API trends error");
+        const data = await res.json();
+        
+        if (elements.trendPeakTime) elements.trendPeakTime.textContent = data.peak_load_time || "N/A";
+        if (elements.trendLoadStats) {
+            elements.trendLoadStats.textContent = `${data.avg_load.toFixed(1)} / ${data.peak_load.toFixed(1)} MW`;
+        }
+        if (elements.trendStability) elements.trendStability.textContent = `${data.stability_factor.toFixed(1)}%`;
+        if (elements.trendAnomalies) {
+            elements.trendAnomalies.textContent = data.anomaly_count;
+            if (data.anomaly_count > 0) {
+                elements.trendAnomalies.className = "mono-value red-text";
+            } else {
+                elements.trendAnomalies.className = "mono-value text-pink";
+            }
+        }
+    } catch (err) {
+        console.error("Trends fetch error:", err);
+    }
+}
+
 async function sendControlUpdate(payload) {
     try {
         await fetch(`${API_BASE}/grid/control`, {
@@ -244,25 +274,33 @@ function updateUIElements(data) {
     elements.valDynamicPrice.textContent = data.dynamic_price.toFixed(3);
     elements.valAvgPrice.textContent = `₹${data.avg_price.toFixed(3)}/kWh`;
     
-    // Adjust warning tier colors
+    // Adjust warning tier colors and status badge overrides
+    if (data.anomaly_type) {
+        elements.gridStatus.className = "grid-status-badge pulse-glow red";
+        elements.gridStatusText.textContent = data.status_text;
+    } else if (data.dynamic_price > 9.00) {
+        elements.gridStatus.className = "grid-status-badge pulse-glow red";
+        elements.gridStatusText.textContent = "PEAK GRID LOAD";
+    } else if (data.dynamic_price < 5.00) {
+        elements.gridStatus.className = "grid-status-badge pulse-glow yellow";
+        elements.gridStatusText.textContent = "RENEWABLE SURPLUS";
+    } else {
+        elements.gridStatus.className = "grid-status-badge pulse-glow green";
+        elements.gridStatusText.textContent = "GRID OPERATING STABLE";
+    }
+
     if (data.dynamic_price > 9.00) {
         elements.valPriceRate.textContent = "PEAK TARIFFS";
         elements.valPriceRate.className = "rate-status red-text";
         elements.barPriceTier.className = "progress-bar-fill pink red-text";
-        elements.gridStatus.className = "grid-status-badge pulse-glow red";
-        elements.gridStatusText.textContent = "PEAK GRID LOAD";
     } else if (data.dynamic_price < 5.00) {
         elements.valPriceRate.textContent = "SURPLUS RATES";
         elements.valPriceRate.className = "rate-status text-green";
         elements.barPriceTier.className = "progress-bar-fill pink text-green";
-        elements.gridStatus.className = "grid-status-badge pulse-glow yellow";
-        elements.gridStatusText.textContent = "RENEWABLE SURPLUS";
     } else {
         elements.valPriceRate.textContent = "NOMINAL RATE";
         elements.valPriceRate.className = "rate-status green-text";
         elements.barPriceTier.className = "progress-bar-fill pink";
-        elements.gridStatus.className = "grid-status-badge pulse-glow green";
-        elements.gridStatusText.textContent = "GRID OPERATING STABLE";
     }
     elements.barPriceTier.style.width = `${Math.min(100, ((data.dynamic_price - 3.0) / 12.0) * 100)}%`;
 
@@ -329,11 +367,32 @@ function triggerAdvisoryLog(data) {
     
     const items = [];
 
+    // 1. Anomaly Recommendations
+    if (data.anomaly_type) {
+        items.push({
+            type: "warning",
+            icon: "⚠️",
+            text: `Critical anomaly detected: Sudden ${data.anomaly_type.toUpperCase()} shift. Dispatch secondary storage reserves immediately.`
+        });
+    }
+
+    // 2. High Pricing / Load Shaving Savings
     if (data.dynamic_price > 9.00) {
+        const savingsRate = (data.actual_load * 0.15) * 1000 * (data.dynamic_price - 4.50);
         items.push({
             type: "warning",
             icon: "🚨",
-            text: `High pricing event (₹${data.dynamic_price.toFixed(3)}/kWh). Peak hours demand mitigation recommended. Dispatch batteries immediately.`
+            text: `High pricing event (₹${data.dynamic_price.toFixed(2)}/kWh). Peak savings advisor: Shifting 15% load (${(data.actual_load * 0.15).toFixed(1)} MW) saves ₹${savingsRate.toLocaleString(undefined, {maximumFractionDigits: 0})}/hour.`
+        });
+    }
+
+    // 3. Storage Arbitrage Savings
+    if (data.battery_soc > 30.0 && data.dynamic_price > 9.00 && data.battery_mode === "auto") {
+        const arbitrageVal = Math.abs(data.battery_rate || 8) * 1000 * (data.dynamic_price - 6.20);
+        items.push({
+            type: "positive",
+            icon: "🔋",
+            text: `Storage arbitrage active: Battery discharging saves ₹${arbitrageVal.toLocaleString(undefined, {maximumFractionDigits: 0})}/hour compared to utility grid import.`
         });
     }
 
@@ -483,6 +542,38 @@ function drawLiveDispatchChart() {
     gridG.appendChild(drawLinePath(localHistory, d => d.solar, minX, maxX, minY, maxY, "chart-path path-solar"));
     gridG.appendChild(drawLinePath(localHistory, d => d.wind, minX, maxX, minY, maxY, "chart-path path-wind"));
     gridG.appendChild(drawLinePath(localHistory, d => d.battery, minX, maxX, minY, maxY, "chart-path path-battery"));
+
+    // DRAW ANOMALY INDICATORS IF ANY
+    localHistory.forEach(d => {
+        if (d.anomaly_type) {
+            const x = getSvgX(d.minute, minX, maxX);
+            const y = getSvgY(d.load, minY, maxY);
+            
+            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            circle.setAttribute("cx", x);
+            circle.setAttribute("cy", y);
+            circle.setAttribute("r", 5);
+            circle.setAttribute("class", "anomaly-dot");
+            
+            // Tooltip events
+            circle.addEventListener('mouseover', (e) => {
+                const tooltip = elements.dispatchTooltip;
+                tooltip.classList.remove('hidden');
+                tooltip.style.left = `${e.pageX + 10}px`;
+                tooltip.style.top = `${e.pageY - 15}px`;
+                tooltip.innerHTML = `<strong>⚠️ ${d.anomaly_type.toUpperCase()} ANOMALY</strong><br/>
+                                     Time: ${d.time_str}<br/>
+                                     Load: ${d.load.toFixed(1)} MW<br/>
+                                     Frequency: ${d.frequency.toFixed(2)} Hz`;
+            });
+            
+            circle.addEventListener('mouseout', () => {
+                elements.dispatchTooltip.classList.add('hidden');
+            });
+            
+            gridG.appendChild(circle);
+        }
+    });
 }
 
 function drawAreaPath(data, valueFn, minX, maxX, minY, maxY, gradName) {
@@ -968,6 +1059,7 @@ async function initSystem() {
     await fetchGridStatus();
     await fetchGridHistory();
     await fetchGridForecast();
+    await fetchGridTrends();
     
     // Set up Tooltips Hover Tracking
     setupTooltipHandlers();
@@ -978,10 +1070,11 @@ async function initSystem() {
     setInterval(async () => {
         await fetchGridStatus();
         
-        // Periodically refresh history and forecasts (every 5-10 seconds to save bandwidth)
+        // Periodically refresh history, forecasts, and trends (every 5-10 seconds to save bandwidth)
         if (currentMinute % 5 === 0) {
             await fetchGridHistory();
             await fetchGridForecast();
+            await fetchGridTrends();
         }
     }, 1000);
 }

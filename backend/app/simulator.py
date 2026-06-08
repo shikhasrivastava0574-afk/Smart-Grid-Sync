@@ -35,6 +35,7 @@ class SmartGridSimulator:
         self.wind_output = 8.0
         self.dynamic_price = 6.20
         self.congestion_factor = 0.0
+        self.anomaly_type = None
         self.status_text = "GRID OPERATING STABLE"
         self.status_class = "green"
 
@@ -185,8 +186,21 @@ class SmartGridSimulator:
         if clean_ratio > 0.1:
             self.carbon_saved += (total_renewables - self.curtailed_renewables) * elapsed_hrs * 450.0 / 1000.0
 
-        # Sync visual classes
-        if self.dynamic_price > 9.00:
+        # Anomaly Detection Logic
+        self.anomaly_type = None
+        if self.grid_frequency < 49.85 or self.grid_frequency > 50.15:
+            self.anomaly_type = "frequency"
+        elif self.actual_load > 1.35 * self.base_load or self.actual_load < 0.65 * self.base_load:
+            self.anomaly_type = "load"
+
+        # Sync visual classes (with Anomaly overrides)
+        if self.anomaly_type == "frequency":
+            self.status_text = "⚠️ FREQUENCY ANOMALY"
+            self.status_class = "red"
+        elif self.anomaly_type == "load":
+            self.status_text = "⚠️ LOAD ANOMALY"
+            self.status_class = "red"
+        elif self.dynamic_price > 9.00:
             self.status_text = "PEAK GRID LOAD"
             self.status_class = "red"
         elif self.dynamic_price < 5.00:
@@ -204,5 +218,6 @@ class SmartGridSimulator:
             "wind": self.wind_output,
             "battery": self.battery_rate,
             "price": self.dynamic_price,
-            "frequency": self.grid_frequency
+            "frequency": self.grid_frequency,
+            "anomaly_type": self.anomaly_type
         }

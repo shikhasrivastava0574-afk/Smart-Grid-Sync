@@ -18,7 +18,8 @@ def init_db():
         wind REAL,
         battery REAL,
         price REAL,
-        frequency REAL
+        frequency REAL,
+        anomaly_type TEXT DEFAULT NULL
     )
     """)
     conn.commit()

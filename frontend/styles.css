@@ -1207,3 +1207,76 @@ body {
     color: #ffffff;
 }
 
+/* ==========================================================================
+   ADVANCED ANALYTICS (ANOMALIES & TRENDS)
+   ========================================================================== */
+
+.anomaly-dot {
+    fill: #ff5e57;
+    stroke: rgba(255, 94, 87, 0.4);
+    stroke-width: 6px;
+    cursor: pointer;
+    transform-origin: center;
+    animation: pulse-anomaly 1.6s ease-in-out infinite;
+    filter: drop-shadow(0 0 4px #ff5e57);
+}
+
+@keyframes pulse-anomaly {
+    0% {
+        stroke-width: 4px;
+        r: 5;
+    }
+    50% {
+        stroke-width: 10px;
+        r: 6.5;
+    }
+    100% {
+        stroke-width: 4px;
+        r: 5;
+    }
+}
+
+.grid-trends-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.trends-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.trend-item {
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: var(--border-radius-sm);
+    padding: 8px 12px;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.trend-item:hover {
+    transform: translateY(-1px);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.trend-label {
+    font-size: 0.65rem;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+    font-weight: 500;
+}
+
+.trend-item .mono-value {
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+

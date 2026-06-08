@@ -82,8 +82,8 @@ def run_simulation_loop():
                 if step_data["minute"] % 10 == 0:
                     cursor.execute(
                         """
-                        INSERT INTO grid_metrics (time_str, minute, load, solar, wind, battery, price, frequency)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        INSERT INTO grid_metrics (time_str, minute, load, solar, wind, battery, price, frequency, anomaly_type)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                         """,
                         (
                             step_data["time_str"],
@@ -93,7 +93,8 @@ def run_simulation_loop():
                             step_data["wind"],
                             step_data["battery"],
                             step_data["price"],
-                            step_data["frequency"]
+                            step_data["frequency"],
+                            step_data.get("anomaly_type")
                         )
                     )
                     conn.commit()
@@ -145,6 +146,8 @@ class SmartGridAPIHandler(BaseHTTPRequestHandler):
             self.handle_get_history()
         elif path == "/api/grid/forecast":
             self.handle_get_forecast()
+        elif path == "/api/grid/trends":
+            self.handle_get_trends()
         else:
             self.send_error(404, "Endpoint not found")
 
@@ -229,7 +232,8 @@ class SmartGridAPIHandler(BaseHTTPRequestHandler):
             "carbon_intensity": carbon_intensity,
             "carbon_saved": simulator.carbon_saved,
             "status_text": simulator.status_text,
-            "status_class": simulator.status_class
+            "status_class": simulator.status_class,
+            "anomaly_type": simulator.anomaly_type
         }
 
         self.send_response(200)
@@ -259,6 +263,59 @@ class SmartGridAPIHandler(BaseHTTPRequestHandler):
             "horizon": 24,
             "points": points
         }
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(json.dumps(response_data).encode('utf-8'))
+
+    def handle_get_trends(self):
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("SELECT * FROM grid_metrics ORDER BY id ASC")
+            rows = cursor.fetchall()
+            metrics = [dict(r) for r in rows]
+        finally:
+            conn.close()
+
+        if not metrics:
+            response_data = {
+                "peak_load": 0.0,
+                "peak_load_time": "N/A",
+                "avg_load": 0.0,
+                "peak_price": 0.0,
+                "stability_factor": 100.0,
+                "anomaly_count": 0
+            }
+        else:
+            loads = [m["load"] for m in metrics]
+            prices = [m["price"] for m in metrics]
+            freqs = [m["frequency"] for m in metrics]
+            times = [m["time_str"] for m in metrics]
+            anomalies = [m.get("anomaly_type") for m in metrics]
+
+            peak_load = max(loads)
+            peak_load_time = times[loads.index(peak_load)]
+            avg_load = sum(loads) / len(loads)
+            peak_price = max(prices)
+            
+            # stability factor based on deviation from 50.00 Hz
+            mean_freq = sum(freqs) / len(freqs)
+            variance = sum((x - mean_freq) ** 2 for x in freqs) / len(freqs)
+            std_freq = math.sqrt(variance)
+            stability_factor = max(90.0, min(100.0, 100.0 - (std_freq / 0.5) * 100.0))
+            
+            anomaly_count = sum(1 for a in anomalies if a is not None)
+
+            response_data = {
+                "peak_load": peak_load,
+                "peak_load_time": peak_load_time,
+                "avg_load": avg_load,
+                "peak_price": peak_price,
+                "stability_factor": stability_factor,
+                "anomaly_count": anomaly_count
+            }
+
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.end_headers()
