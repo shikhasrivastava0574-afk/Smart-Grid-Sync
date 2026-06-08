@@ -290,7 +290,7 @@ def predict_24h_ahead(model_type: str, simulator: SmartGridSimulator):
             predicted_load = predicted_load + math.cos((blocky_hour - 4) / 24.0 * 2 * math.pi) * 0.8
             
         net_load = predicted_load - predicted_solar
-        predicted_price = simulator.calculate_price_value(net_load, 0.0)
+        predicted_price = simulator.calculate_price_value(net_load, 0.0, forecast_hour)
         
         forecasts.append({
             "hour": forecast_hour,
