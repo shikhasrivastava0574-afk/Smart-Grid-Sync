@@ -324,8 +324,8 @@ if override_active:
     else:
         base_solar_gen = 0.0
 
-# Calculate price and tier from updated demand
-current_price, price_tier = pricing_engine.get_price_and_tier(actual_consumption, category)
+# Calculate price and tier from updated demand with Indian Time-of-Day tariffs
+current_price, price_tier = pricing_engine.get_price_and_tier(actual_consumption, category, selected_hour)
 net_grid_requirement = max(0.0, actual_consumption - base_solar_gen)
 
 # Carbon Intensity (approximate mapping)
@@ -410,6 +410,17 @@ else:
         for sug in suggestions:
             st.markdown(f"🔹 {sug}")
 
+# Calculate projected monthly slab bill based on Indian utility tariff slabs
+daily_units_mean = day_df_category['Consumption_kWh'].mean() * 24
+monthly_units_projected = daily_units_mean * 30
+projected_slab_bill = pricing_engine.calculate_monthly_slab_bill(monthly_units_projected, category)
+
+st.write("---")
+bill_col1, bill_col2 = st.columns([2, 3])
+with bill_col1:
+    st.info(f"💰 **Projected Monthly Slab Bill**: **₹{projected_slab_bill:,.2f}**")
+with bill_col2:
+    st.write(f"Estimated for a monthly consumption of **{monthly_units_projected:,.1f} kWh (units)** calculated from active daily averages. Slabs: ₹4.50 (0-100), ₹8.50 (101-300), ₹12.00 (301-500), ₹15.00 (>500) for Residential.")
 st.write("---")
 
 # ==============================================================================

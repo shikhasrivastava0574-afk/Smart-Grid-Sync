@@ -52,7 +52,7 @@ def run_simulation_loop():
                     battery = -min(simulator.battery_max_rate, (demand - solar - wind))
                 
                 net_load = demand - solar - wind + battery
-                price = simulator.calculate_price_value(net_load, 0.0)
+                price = simulator.calculate_price_value(net_load, 0.0, hour)
                 
                 cursor.execute(
                     """
@@ -67,7 +67,7 @@ def run_simulation_loop():
                         wind,
                         battery,
                         price,
-                        60.0 + random.uniform(-0.02, 0.02)
+                        50.0 + random.uniform(-0.02, 0.02)
                     )
                 )
             conn.commit()

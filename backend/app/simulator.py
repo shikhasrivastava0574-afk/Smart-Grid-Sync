@@ -25,7 +25,7 @@ class SmartGridSimulator:
         self.selected_model = "lstm"
         self.carbon_saved = 1240.0
         self.curtailed_renewables = 0.0
-        self.grid_frequency = 60.00
+        self.grid_frequency = 50.00
         self.fossil_backup = 0.0
         
         # State variables to share with API
@@ -33,7 +33,7 @@ class SmartGridSimulator:
         self.base_load = 40.0
         self.solar_output = 15.0
         self.wind_output = 8.0
-        self.dynamic_price = 0.15
+        self.dynamic_price = 6.20
         self.congestion_factor = 0.0
         self.status_text = "GRID OPERATING STABLE"
         self.status_class = "green"
@@ -61,9 +61,21 @@ class SmartGridSimulator:
         else:
             return 58.0 - (hour - 20) * 3.5
 
-    def calculate_price_value(self, net_load, congestion):
+    def calculate_price_value(self, net_load, congestion, hour):
         base_price = 6.20
         price = base_price + (net_load / 40.0) * 4.0 + congestion * 3.0
+        
+        # Apply Indian Time-of-Day (ToD) tariff offsets
+        # 22:00 to 06:00 (Night Off-Peak rebate of ₹1.50)
+        if hour >= 22 or hour < 6:
+            price -= 1.50
+        # 09:00 to 12:00 (Morning Peak surcharge of ₹1.50)
+        elif 9 <= hour < 12:
+            price += 1.50
+        # 18:00 to 22:00 (Evening Peak surcharge of ₹2.50)
+        elif 18 <= hour < 22:
+            price += 2.50
+
         return max(3.00, min(16.00, price))
 
     def step(self, speed_minutes):
@@ -85,9 +97,18 @@ class SmartGridSimulator:
         elif self.temperature < 15.0:
             temp_adjustment = (15.0 - self.temperature) * 0.8
             
+        # Apply Price Elasticity of Demand (Consumer Demand Response)
+        elasticity_multiplier = 1.0
+        if self.dynamic_price > 12.00:
+            elasticity_multiplier = 0.85  # 15% demand reduction (Critical Peak)
+        elif self.dynamic_price > 9.00:
+            elasticity_multiplier = 0.92  # 8% demand reduction (Peak)
+        elif self.dynamic_price < 5.00:
+            elasticity_multiplier = 1.05  # 5% load expansion (Off-Peak surplus)
+            
         noise = math.sin(self.current_time / 10.0) * 1.2 + (random.random() * 0.8 - 0.4)
         scenario_multiplier = 1.2 if self.active_scenario == "heatwave" else 1.0
-        self.actual_load = max(10.0, (self.base_load * scenario_multiplier) + temp_adjustment + noise)
+        self.actual_load = max(10.0, ((self.base_load * scenario_multiplier) + temp_adjustment + noise) * elasticity_multiplier)
 
         # 3. Renewables outputs
         # Solar peaking at 12pm, reduced by clouds
@@ -149,15 +170,15 @@ class SmartGridSimulator:
             self.fossil_backup = 0.0
             self.curtailed_renewables = abs(net_grid_load)
 
-        # Grid frequency calculations
-        freq_base = 60.00
+        # Grid frequency calculations (Standard 50.00 Hz for India)
+        freq_base = 50.00
         load_imbalance = self.actual_load - (total_renewables - self.curtailed_renewables - self.battery_rate)
         self.grid_frequency = freq_base - (load_imbalance / 500.0) + (random.random() * 0.015 - 0.0075)
-        self.grid_frequency = max(59.10, min(60.80, self.grid_frequency))
+        self.grid_frequency = max(49.10, min(50.80, self.grid_frequency))
 
         # Congestion checks
         self.congestion_factor = 0.8 if self.active_scenario == "congestion" else 0.0
-        self.dynamic_price = self.calculate_price_value(net_grid_load, self.congestion_factor)
+        self.dynamic_price = self.calculate_price_value(net_grid_load, self.congestion_factor, current_hour)
 
         # Carbon Saved counting
         clean_ratio = total_renewables / self.actual_load if self.actual_load > 0 else 0
