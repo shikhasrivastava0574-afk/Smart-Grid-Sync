@@ -217,6 +217,8 @@ class SmartGridAPIHandler(BaseHTTPRequestHandler):
             "temperature": simulator.temperature,
             "cloud_cover": simulator.cloud_cover,
             "wind_speed": simulator.wind_speed,
+            "solar_capacity": simulator.solar_capacity,
+            "wind_capacity": simulator.wind_capacity,
             "battery_soc": battery_soc,
             "battery_charge": simulator.battery_charge,
             "battery_mode": simulator.battery_mode,
@@ -328,6 +330,10 @@ class SmartGridAPIHandler(BaseHTTPRequestHandler):
             simulator.cloud_cover = float(payload["cloud_cover"])
         if "wind_speed" in payload and payload["wind_speed"] is not None:
             simulator.wind_speed = float(payload["wind_speed"])
+        if "solar_capacity" in payload and payload["solar_capacity"] is not None:
+            simulator.solar_capacity = float(payload["solar_capacity"])
+        if "wind_capacity" in payload and payload["wind_capacity"] is not None:
+            simulator.wind_capacity = float(payload["wind_capacity"])
         if "battery_mode" in payload and payload["battery_mode"] is not None:
             mode = payload["battery_mode"]
             if mode in ["auto", "charge", "discharge"]:

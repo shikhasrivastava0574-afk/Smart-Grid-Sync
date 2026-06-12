@@ -152,11 +152,46 @@ def create_presentation(output_path, img1_path, img2_path):
         run2.font.color.rgb = c_white
 
     # =========================================================================
-    # SLIDE 4: INDIAN GRID STANDARDS
+    # SLIDE 4: WEATHER & RENEWABLE CONTROLS
     # =========================================================================
     slide = prs.slides.add_slide(blank_slide_layout)
     apply_dark_bg(slide)
-    add_title(slide, "3. Indian Power Grid Standards Localization")
+    add_title(slide, "3. Weather & Renewable Controls")
+    
+    txBox = slide.shapes.add_textbox(Inches(0.75), Inches(1.5), Inches(11.83), Inches(5.0))
+    tf = txBox.text_frame
+    tf.word_wrap = True
+    
+    controls = [
+        ("Environmental Weather Simulation", "Dynamic sliders for Ambient Temperature (controls AC load), Cloud Cover (controls solar output), and Wind Velocity (controls wind generator output) to stress-test the grid under varying climates."),
+        ("Renewable Grid Capacities", "Sliders for Installed Solar Generation Capacity (0-100 MW) and Installed Wind Generation Capacity (0-100 MW) allowing real-time grid scaling and planning simulations."),
+        ("Manual Dispatch Overrides", "Supports forced commands for Battery Storage (Auto AI mode, Force Charging, or Force Discharging) to let operators test grid peak-shaving overrides."),
+        ("Grid Stress Scenarios", "One-click hotkeys to trigger standard high-stress scenarios (Heatwaves, Stormy wind surges, Cloudy solar drops, and Line congestion) for immediate testing.")
+    ]
+    
+    for title, desc in controls:
+        p = tf.add_paragraph()
+        p.space_after = Pt(14)
+        
+        run1 = p.add_run()
+        run1.text = title + "\n"
+        run1.font.name = "Outfit"
+        run1.font.bold = True
+        run1.font.size = Pt(16)
+        run1.font.color.rgb = c_teal
+        
+        run2 = p.add_run()
+        run2.text = desc
+        run2.font.name = "Inter"
+        run2.font.size = Pt(14)
+        run2.font.color.rgb = c_white
+
+    # =========================================================================
+    # SLIDE 5: INDIAN GRID STANDARDS
+    # =========================================================================
+    slide = prs.slides.add_slide(blank_slide_layout)
+    apply_dark_bg(slide)
+    add_title(slide, "4. Indian Power Grid Standards Localization")
     
     txBox = slide.shapes.add_textbox(Inches(0.75), Inches(1.5), Inches(11.83), Inches(5.0))
     tf = txBox.text_frame
@@ -186,11 +221,11 @@ def create_presentation(output_path, img1_path, img2_path):
         run2.font.color.rgb = c_white
 
     # =========================================================================
-    # SLIDE 5: DEMAND RESPONSE
+    # SLIDE 6: DEMAND RESPONSE
     # =========================================================================
     slide = prs.slides.add_slide(blank_slide_layout)
     apply_dark_bg(slide)
-    add_title(slide, "4. Price-Elastic Demand Response (DR)")
+    add_title(slide, "5. Price-Elastic Demand Response (DR)")
     
     txBox = slide.shapes.add_textbox(Inches(0.75), Inches(1.5), Inches(11.83), Inches(5.0))
     tf = txBox.text_frame
@@ -227,11 +262,11 @@ def create_presentation(output_path, img1_path, img2_path):
         run2.font.color.rgb = c_white
 
     # =========================================================================
-    # SLIDE 6: ADVANCED ANALYTICS
+    # SLIDE 7: ADVANCED ANALYTICS
     # =========================================================================
     slide = prs.slides.add_slide(blank_slide_layout)
     apply_dark_bg(slide)
-    add_title(slide, "5. Advanced Grid Analytics Features")
+    add_title(slide, "6. Advanced Grid Analytics Features")
     
     txBox = slide.shapes.add_textbox(Inches(0.75), Inches(1.5), Inches(11.83), Inches(5.0))
     tf = txBox.text_frame
@@ -261,11 +296,11 @@ def create_presentation(output_path, img1_path, img2_path):
         run2.font.color.rgb = c_white
 
     # =========================================================================
-    # SLIDE 7: MACHINE LEARNING FROM SCRATCH
+    # SLIDE 8: MACHINE LEARNING FROM SCRATCH
     # =========================================================================
     slide = prs.slides.add_slide(blank_slide_layout)
     apply_dark_bg(slide)
-    add_title(slide, "6. Custom NumPy Machine Learning Models")
+    add_title(slide, "7. Custom NumPy Machine Learning Models")
     
     txBox = slide.shapes.add_textbox(Inches(0.75), Inches(1.5), Inches(11.83), Inches(5.0))
     tf = txBox.text_frame
@@ -295,11 +330,11 @@ def create_presentation(output_path, img1_path, img2_path):
         run2.font.color.rgb = c_white
 
     # =========================================================================
-    # SLIDE 8: FRONTEND UI & POLISH
+    # SLIDE 9: FRONTEND UI & POLISH
     # =========================================================================
     slide = prs.slides.add_slide(blank_slide_layout)
     apply_dark_bg(slide)
-    add_title(slide, "7. Premium UI/UX & Performance Polish")
+    add_title(slide, "8. Premium UI/UX & Performance Polish")
     
     txBox = slide.shapes.add_textbox(Inches(0.75), Inches(1.5), Inches(11.83), Inches(5.0))
     tf = txBox.text_frame
@@ -329,11 +364,11 @@ def create_presentation(output_path, img1_path, img2_path):
         run2.font.color.rgb = c_white
 
     # =========================================================================
-    # SLIDE 9: SCREENSHOTS SLIDE
+    # SLIDE 10: SCREENSHOTS SLIDE
     # =========================================================================
     slide = prs.slides.add_slide(blank_slide_layout)
     apply_dark_bg(slide)
-    add_title(slide, "8. Interface Visuals & Screenshots")
+    add_title(slide, "9. Interface Visuals & Screenshots")
     
     # Place images side-by-side or stacked
     # Width = 13.33 inches, height = 7.5 inches
@@ -382,11 +417,11 @@ def create_presentation(output_path, img1_path, img2_path):
         p.alignment = PP_ALIGN.CENTER
 
     # =========================================================================
-    # SLIDE 10: CONCLUSION
+    # SLIDE 11: CONCLUSION
     # =========================================================================
     slide = prs.slides.add_slide(blank_slide_layout)
     apply_dark_bg(slide)
-    add_title(slide, "9. Summary & Academic Value")
+    add_title(slide, "10. Summary & Academic Value")
     
     txBox = slide.shapes.add_textbox(Inches(0.75), Inches(1.5), Inches(11.83), Inches(5.0))
     tf = txBox.text_frame

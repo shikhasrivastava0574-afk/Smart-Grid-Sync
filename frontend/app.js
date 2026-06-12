@@ -60,9 +60,13 @@ const elements = {
     sliderTemp: document.getElementById('slider-temp'),
     sliderClouds: document.getElementById('slider-clouds'),
     sliderWind: document.getElementById('slider-wind'),
+    sliderSolarCap: document.getElementById('slider-solar-cap'),
+    sliderWindCap: document.getElementById('slider-wind-cap'),
     valCtrlTemp: document.getElementById('val-ctrl-temp'),
     valCtrlClouds: document.getElementById('val-ctrl-clouds'),
     valCtrlWind: document.getElementById('val-ctrl-wind'),
+    valCtrlSolarCap: document.getElementById('val-ctrl-solar-cap'),
+    valCtrlWindCap: document.getElementById('val-ctrl-wind-cap'),
     btnBatAuto: document.getElementById('btn-bat-auto'),
     btnBatCharge: document.getElementById('btn-bat-charge'),
     btnBatDischarge: document.getElementById('btn-bat-discharge'),
@@ -169,6 +173,14 @@ async function fetchGridStatus() {
         if (document.activeElement !== elements.sliderWind) {
             elements.sliderWind.value = data.wind_speed;
             elements.valCtrlWind.textContent = `${data.wind_speed.toFixed(1)} m/s`;
+        }
+        if (document.activeElement !== elements.sliderSolarCap) {
+            elements.sliderSolarCap.value = data.solar_capacity;
+            elements.valCtrlSolarCap.textContent = `${data.solar_capacity.toFixed(0)} MW`;
+        }
+        if (document.activeElement !== elements.sliderWindCap) {
+            elements.sliderWindCap.value = data.wind_capacity;
+            elements.valCtrlWindCap.textContent = `${data.wind_capacity.toFixed(0)} MW`;
         }
         
         updateUIElements(data);
@@ -996,6 +1008,18 @@ function registerEventListeners() {
         const val = parseFloat(e.target.value);
         elements.valCtrlWind.textContent = `${val.toFixed(1)} m/s`;
         throttleControlUpdate({ wind_speed: val });
+    });
+
+    elements.sliderSolarCap.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        elements.valCtrlSolarCap.textContent = `${val.toFixed(0)} MW`;
+        throttleControlUpdate({ solar_capacity: val });
+    });
+    
+    elements.sliderWindCap.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        elements.valCtrlWindCap.textContent = `${val.toFixed(0)} MW`;
+        throttleControlUpdate({ wind_capacity: val });
     });
 
     // 4. Battery Modes

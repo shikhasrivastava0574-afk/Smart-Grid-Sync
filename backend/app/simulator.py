@@ -13,6 +13,10 @@ class SmartGridSimulator:
         self.cloud_cover = 15.0
         self.wind_speed = 5.5
         
+        # Renewable capacities (MW)
+        self.solar_capacity = 35.0
+        self.wind_capacity = 20.0
+        
         # Battery specifications (100 MWh capacity, 10 MW max rate)
         self.battery_capacity = 100.0
         self.battery_charge = 50.0 # starts at 50% SoC
@@ -113,7 +117,7 @@ class SmartGridSimulator:
 
         # 3. Renewables outputs
         # Solar peaking at 12pm, reduced by clouds
-        solar_potential = 35.0
+        solar_potential = self.solar_capacity
         self.solar_output = 0.0
         if 6 <= current_hour <= 18:
             self.solar_output = solar_potential * math.sin((current_hour - 6) / 12.0 * math.pi)
@@ -121,7 +125,7 @@ class SmartGridSimulator:
         self.solar_output = max(0.0, self.solar_output)
 
         # Wind turbine power curve
-        wind_capacity = 20.0
+        wind_capacity = self.wind_capacity
         self.wind_output = 0.0
         if 3.0 <= self.wind_speed <= 25.0:
             if self.wind_speed < 12.0:
