@@ -331,11 +331,46 @@ def create_presentation(output_path, img1_path, img2_path):
         run2.font.color.rgb = c_white
 
     # =========================================================================
-    # SLIDE 9: MACHINE LEARNING FROM SCRATCH
+    # SLIDE 9: AI FORECASTING SANDBOX
     # =========================================================================
     slide = prs.slides.add_slide(blank_slide_layout)
     apply_dark_bg(slide)
-    add_title(slide, "8. Custom NumPy Machine Learning Models")
+    add_title(slide, "8. AI Forecasting Sandbox & Model Training")
+    
+    txBox = slide.shapes.add_textbox(Inches(0.75), Inches(1.5), Inches(11.83), Inches(5.0))
+    tf = txBox.text_frame
+    tf.word_wrap = True
+    
+    sandbox_points = [
+        ("Interactive Model Selection", "Select between three custom-coded algorithms: LSTM Recurrent Network (RNN) representation, XGBoost Regressor (Tree Ensemble), or Ridge Regression (Linear), with configurable prediction horizons (e.g. 24-Hours Ahead)."),
+        ("Real-Time Training Loop", "Allows operators to trigger a model training session on the fly by clicking 'Train Forecast Model', running training epochs and decision tree updates directly in the backend."),
+        ("Training & Validation Metrics", "Displays live accuracy feedback upon convergence: Epochs (100/100), Training Loss (RMSE 0.0241), and Validation Loss (0.0264) to ensure model reliability."),
+        ("Active Developer Console Logs", "An integrated UI console box outputs backend HTTP API connection steps, data load verification, and live model updates for complete system transparency.")
+    ]
+    
+    for title, desc in sandbox_points:
+        p = tf.add_paragraph()
+        p.space_after = Pt(14)
+        
+        run1 = p.add_run()
+        run1.text = title + "\n"
+        run1.font.name = "Outfit"
+        run1.font.bold = True
+        run1.font.size = Pt(16)
+        run1.font.color.rgb = c_teal
+        
+        run2 = p.add_run()
+        run2.text = desc
+        run2.font.name = "Inter"
+        run2.font.size = Pt(14)
+        run2.font.color.rgb = c_white
+
+    # =========================================================================
+    # SLIDE 10: MACHINE LEARNING FROM SCRATCH
+    # =========================================================================
+    slide = prs.slides.add_slide(blank_slide_layout)
+    apply_dark_bg(slide)
+    add_title(slide, "9. Custom NumPy Machine Learning Models")
     
     txBox = slide.shapes.add_textbox(Inches(0.75), Inches(1.5), Inches(11.83), Inches(5.0))
     tf = txBox.text_frame
@@ -365,11 +400,11 @@ def create_presentation(output_path, img1_path, img2_path):
         run2.font.color.rgb = c_white
 
     # =========================================================================
-    # SLIDE 10: FRONTEND UI & POLISH
+    # SLIDE 11: FRONTEND UI & POLISH
     # =========================================================================
     slide = prs.slides.add_slide(blank_slide_layout)
     apply_dark_bg(slide)
-    add_title(slide, "9. Premium UI/UX & Performance Polish")
+    add_title(slide, "10. Premium UI/UX & Performance Polish")
     
     txBox = slide.shapes.add_textbox(Inches(0.75), Inches(1.5), Inches(11.83), Inches(5.0))
     tf = txBox.text_frame
@@ -399,11 +434,11 @@ def create_presentation(output_path, img1_path, img2_path):
         run2.font.color.rgb = c_white
 
     # =========================================================================
-    # SLIDE 11: SCREENSHOTS SLIDE
+    # SLIDE 12: SCREENSHOTS SLIDE
     # =========================================================================
     slide = prs.slides.add_slide(blank_slide_layout)
     apply_dark_bg(slide)
-    add_title(slide, "10. Interface Visuals & Screenshots")
+    add_title(slide, "11. Interface Visuals & Screenshots")
     
     # Place images side-by-side or stacked
     has_img1 = os.path.exists(img1_path)
@@ -444,11 +479,11 @@ def create_presentation(output_path, img1_path, img2_path):
         p.alignment = PP_ALIGN.CENTER
 
     # =========================================================================
-    # SLIDE 12: CONCLUSION
+    # SLIDE 13: CONCLUSION
     # =========================================================================
     slide = prs.slides.add_slide(blank_slide_layout)
     apply_dark_bg(slide)
-    add_title(slide, "11. Summary & Academic Value")
+    add_title(slide, "12. Summary & Academic Value")
     
     txBox = slide.shapes.add_textbox(Inches(0.75), Inches(1.5), Inches(11.83), Inches(5.0))
     tf = txBox.text_frame
