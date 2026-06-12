@@ -1048,6 +1048,14 @@ function registerEventListeners() {
 // SYSTEM INITIATION
 // ==========================================================================
 
+function hideLoadingOverlay() {
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay && !overlay.classList.contains('fade-out')) {
+        overlay.classList.add('fade-out');
+        console.log("[SYSTEM] Connection active. Dashboard unlocked.");
+    }
+}
+
 async function initSystem() {
     registerEventListeners();
     
@@ -1062,6 +1070,9 @@ async function initSystem() {
     
     appendConsoleLog(`[SYSTEM] Initializing connection to API backend at ${API_BASE}`);
     
+    // Safety fallback: Force hide loading screen after 4 seconds (handles slow server boot/network errors)
+    setTimeout(hideLoadingOverlay, 4000);
+    
     // Initial fetch to load grid state concurrently (non-blocking)
     Promise.allSettled([
         fetchGridStatus(),
@@ -1070,11 +1081,7 @@ async function initSystem() {
         fetchGridTrends()
     ]).then(() => {
         appendConsoleLog("[SYSTEM] Initial grid data loaded successfully.");
-        // Hide loading overlay
-        const overlay = document.getElementById('loading-overlay');
-        if (overlay) {
-            overlay.classList.add('fade-out');
-        }
+        hideLoadingOverlay();
     });
     
     // Core polling cycle (runs every 1 second to fetch live telemetry)
