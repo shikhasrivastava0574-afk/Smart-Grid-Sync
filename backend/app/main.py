@@ -334,6 +334,8 @@ class SmartGridAPIHandler(BaseHTTPRequestHandler):
             simulator.solar_capacity = float(payload["solar_capacity"])
         if "wind_capacity" in payload and payload["wind_capacity"] is not None:
             simulator.wind_capacity = float(payload["wind_capacity"])
+        if "battery_charge" in payload and payload["battery_charge"] is not None:
+            simulator.battery_charge = max(0.0, min(simulator.battery_capacity, float(payload["battery_charge"])))
         if "battery_mode" in payload and payload["battery_mode"] is not None:
             mode = payload["battery_mode"]
             if mode in ["auto", "charge", "discharge"]:

@@ -62,11 +62,13 @@ const elements = {
     sliderWind: document.getElementById('slider-wind'),
     sliderSolarCap: document.getElementById('slider-solar-cap'),
     sliderWindCap: document.getElementById('slider-wind-cap'),
+    sliderBatterySoc: document.getElementById('slider-battery-soc'),
     valCtrlTemp: document.getElementById('val-ctrl-temp'),
     valCtrlClouds: document.getElementById('val-ctrl-clouds'),
     valCtrlWind: document.getElementById('val-ctrl-wind'),
     valCtrlSolarCap: document.getElementById('val-ctrl-solar-cap'),
     valCtrlWindCap: document.getElementById('val-ctrl-wind-cap'),
+    valCtrlBatterySoc: document.getElementById('val-ctrl-battery-soc'),
     btnBatAuto: document.getElementById('btn-bat-auto'),
     btnBatCharge: document.getElementById('btn-bat-charge'),
     btnBatDischarge: document.getElementById('btn-bat-discharge'),
@@ -181,6 +183,10 @@ async function fetchGridStatus() {
         if (document.activeElement !== elements.sliderWindCap) {
             elements.sliderWindCap.value = data.wind_capacity;
             elements.valCtrlWindCap.textContent = `${data.wind_capacity.toFixed(0)} MW`;
+        }
+        if (document.activeElement !== elements.sliderBatterySoc) {
+            elements.sliderBatterySoc.value = data.battery_soc;
+            elements.valCtrlBatterySoc.textContent = `${data.battery_soc.toFixed(0)}%`;
         }
         
         updateUIElements(data);
@@ -1020,6 +1026,12 @@ function registerEventListeners() {
         const val = parseFloat(e.target.value);
         elements.valCtrlWindCap.textContent = `${val.toFixed(0)} MW`;
         throttleControlUpdate({ wind_capacity: val });
+    });
+
+    elements.sliderBatterySoc.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        elements.valCtrlBatterySoc.textContent = `${val.toFixed(0)}%`;
+        throttleControlUpdate({ battery_charge: (val / 100.0) * 100.0 });
     });
 
     // 4. Battery Modes

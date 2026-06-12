@@ -165,7 +165,7 @@ def create_presentation(output_path, img1_path, img2_path):
     controls = [
         ("Environmental Weather Simulation", "Dynamic sliders for Ambient Temperature (controls AC load), Cloud Cover (controls solar output), and Wind Velocity (controls wind generator output) to stress-test the grid under varying climates."),
         ("Renewable Grid Capacities", "Sliders for Installed Solar Generation Capacity (0-100 MW) and Installed Wind Generation Capacity (0-100 MW) allowing real-time grid scaling and planning simulations."),
-        ("Manual Dispatch Overrides", "Supports forced commands for Battery Storage (Auto AI mode, Force Charging, or Force Discharging) to let operators test grid peak-shaving overrides."),
+        ("Manual Dispatch Overrides", "Supports forced commands for Battery Storage (Auto AI mode, Force Charging, or Force Discharging) and a manual State of Charge (SoC) slider to let operators test grid peak-shaving overrides and recover battery levels from zero."),
         ("Grid Stress Scenarios", "One-click hotkeys to trigger standard high-stress scenarios (Heatwaves, Stormy wind surges, Cloudy solar drops, and Line congestion) for immediate testing.")
     ]
     

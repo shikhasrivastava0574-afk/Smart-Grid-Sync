@@ -19,7 +19,7 @@ class SmartGridSimulator:
         
         # Battery specifications (100 MWh capacity, 10 MW max rate)
         self.battery_capacity = 100.0
-        self.battery_charge = 50.0 # starts at 50% SoC
+        self.battery_charge = 80.0 # starts at 80% SoC
         self.battery_max_rate = 10.0
         self.battery_mode = "auto"
         self.battery_rate = 0.0
