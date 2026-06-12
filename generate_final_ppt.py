@@ -296,11 +296,46 @@ def create_presentation(output_path, img1_path, img2_path):
         run2.font.color.rgb = c_white
 
     # =========================================================================
-    # SLIDE 8: MACHINE LEARNING FROM SCRATCH
+    # SLIDE 8: SUSTAINABILITY & GRID ADVISORY
     # =========================================================================
     slide = prs.slides.add_slide(blank_slide_layout)
     apply_dark_bg(slide)
-    add_title(slide, "7. Custom NumPy Machine Learning Models")
+    add_title(slide, "7. Sustainability & Grid Advisory")
+    
+    txBox = slide.shapes.add_textbox(Inches(0.75), Inches(1.5), Inches(11.83), Inches(5.0))
+    tf = txBox.text_frame
+    tf.word_wrap = True
+    
+    sustain_points = [
+        ("Carbon Intensity Metric", "Calculated as: Carbon Intensity = 450 * (1 - clean_ratio) + 2 * fossil_backup. Tracks emissions in g/kWh in real-time, displaying green clean zones vs. fossil-heavy red zones."),
+        ("Total Carbon Saved ($CO_2$ offsets)", "Accumulates the mass of carbon emissions saved since midnight in kilograms (kg) based on renewable MWh generation offset values."),
+        ("AI Optimization Advisory Feed", "Tracks grid diagnostics to trigger instant recommendations (e.g. forced battery charges, secondary reserve generator start-up warnings at <10% SoC)."),
+        ("Historical Grid Trend Insights", "Aggregates SQLite historical logs over a rolling 24-hour window (144 logs) to display Peak Demand Time, Average vs. Peak Load (MW), Grid Stability (%), and Anomaly Counts.")
+    ]
+    
+    for title, desc in sustain_points:
+        p = tf.add_paragraph()
+        p.space_after = Pt(14)
+        
+        run1 = p.add_run()
+        run1.text = title + "\n"
+        run1.font.name = "Outfit"
+        run1.font.bold = True
+        run1.font.size = Pt(16)
+        run1.font.color.rgb = c_purple
+        
+        run2 = p.add_run()
+        run2.text = desc
+        run2.font.name = "Inter"
+        run2.font.size = Pt(14)
+        run2.font.color.rgb = c_white
+
+    # =========================================================================
+    # SLIDE 9: MACHINE LEARNING FROM SCRATCH
+    # =========================================================================
+    slide = prs.slides.add_slide(blank_slide_layout)
+    apply_dark_bg(slide)
+    add_title(slide, "8. Custom NumPy Machine Learning Models")
     
     txBox = slide.shapes.add_textbox(Inches(0.75), Inches(1.5), Inches(11.83), Inches(5.0))
     tf = txBox.text_frame
@@ -330,11 +365,11 @@ def create_presentation(output_path, img1_path, img2_path):
         run2.font.color.rgb = c_white
 
     # =========================================================================
-    # SLIDE 9: FRONTEND UI & POLISH
+    # SLIDE 10: FRONTEND UI & POLISH
     # =========================================================================
     slide = prs.slides.add_slide(blank_slide_layout)
     apply_dark_bg(slide)
-    add_title(slide, "8. Premium UI/UX & Performance Polish")
+    add_title(slide, "9. Premium UI/UX & Performance Polish")
     
     txBox = slide.shapes.add_textbox(Inches(0.75), Inches(1.5), Inches(11.83), Inches(5.0))
     tf = txBox.text_frame
@@ -364,27 +399,20 @@ def create_presentation(output_path, img1_path, img2_path):
         run2.font.color.rgb = c_white
 
     # =========================================================================
-    # SLIDE 10: SCREENSHOTS SLIDE
+    # SLIDE 11: SCREENSHOTS SLIDE
     # =========================================================================
     slide = prs.slides.add_slide(blank_slide_layout)
     apply_dark_bg(slide)
-    add_title(slide, "9. Interface Visuals & Screenshots")
+    add_title(slide, "10. Interface Visuals & Screenshots")
     
     # Place images side-by-side or stacked
-    # Width = 13.33 inches, height = 7.5 inches
-    # Margins: 0.75 left, leaving 11.83 inches width
-    # If side-by-side: each image has 5.5 inches width
     has_img1 = os.path.exists(img1_path)
     has_img2 = os.path.exists(img2_path)
     
     if has_img1 and has_img2:
-        # Side-by-side layout
-        # img1: 1024x665 (W/H ratio 1.54). If W = 5.2, H = 5.2 / 1.54 = 3.37
         slide.shapes.add_picture(img1_path, Inches(0.75), Inches(1.8), width=Inches(5.6))
-        # img2: 1024x345 (W/H ratio 2.97). If W = 5.6, H = 5.6 / 2.97 = 1.88
         slide.shapes.add_picture(img2_path, Inches(6.8), Inches(2.5), width=Inches(5.6))
         
-        # Add labels below pictures
         tx1 = slide.shapes.add_textbox(Inches(0.75), Inches(5.4), Inches(5.6), Inches(1.0))
         tx1.text_frame.word_wrap = True
         p1 = tx1.text_frame.paragraphs[0]
@@ -404,7 +432,6 @@ def create_presentation(output_path, img1_path, img2_path):
         p2.alignment = PP_ALIGN.CENTER
         
     elif has_img1:
-        # Stacked / Center layout for single image
         slide.shapes.add_picture(img1_path, Inches(2.66), Inches(1.6), width=Inches(8.0))
     else:
         txBox = slide.shapes.add_textbox(Inches(0.75), Inches(2.5), Inches(11.83), Inches(2.0))
@@ -417,11 +444,11 @@ def create_presentation(output_path, img1_path, img2_path):
         p.alignment = PP_ALIGN.CENTER
 
     # =========================================================================
-    # SLIDE 11: CONCLUSION
+    # SLIDE 12: CONCLUSION
     # =========================================================================
     slide = prs.slides.add_slide(blank_slide_layout)
     apply_dark_bg(slide)
-    add_title(slide, "10. Summary & Academic Value")
+    add_title(slide, "11. Summary & Academic Value")
     
     txBox = slide.shapes.add_textbox(Inches(0.75), Inches(1.5), Inches(11.83), Inches(5.0))
     tf = txBox.text_frame
