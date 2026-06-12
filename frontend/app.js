@@ -3,7 +3,9 @@
  * Connects UI elements to Python FastAPI endpoints
  */
 
-const API_BASE = "https://smart-grid-sync-1.onrender.com/api";
+const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname === "")
+    ? "http://localhost:8000/api"
+    : "https://smart-grid-sync-1.onrender.com/api";
 
 // Initialize UI configuration state
 let isTraining = false;
@@ -1055,16 +1057,20 @@ async function initSystem() {
         if (banner) banner.classList.remove('hidden');
     }
     
-    // Initial fetch to load grid state
-    await fetchGridStatus();
-    await fetchGridHistory();
-    await fetchGridForecast();
-    await fetchGridTrends();
-    
     // Set up Tooltips Hover Tracking
     setupTooltipHandlers();
     
-    appendConsoleLog("[SYSTEM] Connected to Python FastAPI backend at http://localhost:8000");
+    appendConsoleLog(`[SYSTEM] Initializing connection to API backend at ${API_BASE}`);
+    
+    // Initial fetch to load grid state concurrently (non-blocking)
+    Promise.allSettled([
+        fetchGridStatus(),
+        fetchGridHistory(),
+        fetchGridForecast(),
+        fetchGridTrends()
+    ]).then(() => {
+        appendConsoleLog("[SYSTEM] Initial grid data loaded successfully.");
+    });
     
     // Core polling cycle (runs every 1 second to fetch live telemetry)
     setInterval(async () => {
