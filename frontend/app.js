@@ -1070,6 +1070,11 @@ async function initSystem() {
         fetchGridTrends()
     ]).then(() => {
         appendConsoleLog("[SYSTEM] Initial grid data loaded successfully.");
+        // Hide loading overlay
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) {
+            overlay.classList.add('fade-out');
+        }
     });
     
     // Core polling cycle (runs every 1 second to fetch live telemetry)
