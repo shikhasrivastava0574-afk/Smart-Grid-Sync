@@ -11,6 +11,15 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Global Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner-container">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">CONNECTING TO SMART GRID TELEMETRY...</div>
+            <div class="loading-subtext">Initializing database session and loading forecasting parameters</div>
+        </div>
+    </div>
+
     <div class="app-container">
         <!-- Mixed Content Warning Banner (visible only if secure HTTPS pages fail to fetch insecure HTTP localhost API) -->
         <div id="https-warning-banner" class="warning-banner hidden">
@@ -31,7 +40,7 @@
             <div class="sim-controls-panel">
                 <div class="sim-time-display">
                     <span class="label">GRID TIME:</span>
-                    <span id="grid-clock" class="mono-value">DAY 1 - 08:00</span>
+                    <span id="grid-clock" class="mono-value">CONNECTING...</span>
                 </div>
                 <div class="sim-speed-control">
                     <button id="btn-play-pause" class="btn btn-icon" title="Play/Pause Simulation">
@@ -42,12 +51,12 @@
                     <div class="speed-slider-container">
                         <span class="slider-label">SPEED:</span>
                         <input type="range" id="sim-speed" min="0" max="4" step="1" value="2">
-                        <span id="sim-speed-val" class="mono-label">10x</span>
+                        <span id="sim-speed-val" class="mono-label">--</span>
                     </div>
                 </div>
                 <div class="grid-status-badge pulse-glow green" id="grid-status">
                     <span class="status-indicator"></span>
-                    <span id="grid-status-text">GRID STABLE</span>
+                    <span id="grid-status-text">CONNECTING...</span>
                 </div>
             </div>
         </header>
@@ -67,19 +76,19 @@
                 </div>
                 <div class="kpi-body">
                     <div class="kpi-main-val">
-                        <span id="val-actual-load" class="mono-value">42.8</span><span class="unit">MW</span>
+                        <span id="val-actual-load" class="mono-value">--.-</span><span class="unit">MW</span>
                     </div>
                     <div class="kpi-sub-row">
                         <span class="kpi-sub-label">Base Demand:</span>
-                        <span id="val-base-load" class="mono-value">40.2 MW</span>
+                        <span id="val-base-load" class="mono-value">--.- MW</span>
                     </div>
                     <div class="kpi-sub-row">
                         <span class="kpi-sub-label">Forecast Acc:</span>
-                        <span id="val-forecast-acc" class="mono-value">98.4%</span>
+                        <span id="val-forecast-acc" class="mono-value">--.-%</span>
                     </div>
                 </div>
                 <div class="kpi-footer progress-bar-container">
-                    <div class="progress-bar-fill blue" id="bar-load-capacity" style="width: 65%;"></div>
+                    <div class="progress-bar-fill blue" id="bar-load-capacity" style="width: 0%;"></div>
                 </div>
             </div>
 
@@ -97,21 +106,21 @@
                 </div>
                 <div class="kpi-body">
                     <div class="kpi-main-val">
-                        <span id="val-renewable-percent" class="mono-value">62</span><span class="unit">%</span>
+                        <span id="val-renewable-percent" class="mono-value">--</span><span class="unit">%</span>
                     </div>
                     <div class="kpi-sub-row">
-                        <span class="kpi-sub-label">Solar: <span id="val-solar-mw" class="mono-value text-amber">18.4 MW</span></span>
-                        <span class="kpi-sub-label">Wind: <span id="val-wind-mw" class="mono-value text-green">8.1 MW</span></span>
+                        <span class="kpi-sub-label">Solar: <span id="val-solar-mw" class="mono-value text-amber">--.- MW</span></span>
+                        <span class="kpi-sub-label">Wind: <span id="val-wind-mw" class="mono-value text-green">--.- MW</span></span>
                     </div>
                     <div class="kpi-sub-row">
                         <span class="kpi-sub-label">Curtailment:</span>
-                        <span id="val-curtailment" class="mono-value red-text">0.0 MW</span>
+                        <span id="val-curtailment" class="mono-value">--.- MW</span>
                     </div>
                 </div>
                 <div class="kpi-footer renewable-segment-bar">
-                    <div class="segment solar" id="bar-solar-pct" style="width: 40%;"></div>
-                    <div class="segment wind" id="bar-wind-pct" style="width: 22%;"></div>
-                    <div class="segment other" id="bar-other-pct" style="width: 38%;"></div>
+                    <div class="segment solar" id="bar-solar-pct" style="width: 0%;"></div>
+                    <div class="segment wind" id="bar-wind-pct" style="width: 0%;"></div>
+                    <div class="segment other" id="bar-other-pct" style="width: 0%;"></div>
                 </div>
             </div>
 
@@ -130,19 +139,19 @@
                 </div>
                 <div class="kpi-body">
                     <div class="kpi-main-val">
-                        <span class="currency">₹</span><span id="val-dynamic-price" class="mono-value">0.142</span><span class="unit">/kWh</span>
+                        <span class="currency">₹</span><span id="val-dynamic-price" class="mono-value">-.---</span><span class="unit">/kWh</span>
                     </div>
                     <div class="kpi-sub-row">
                         <span class="kpi-sub-label">Avg Tariff:</span>
-                        <span id="val-avg-price" class="mono-value">₹0.150/kWh</span>
+                        <span id="val-avg-price" class="mono-value">₹-.---/kWh</span>
                     </div>
                     <div class="kpi-sub-row">
                         <span class="kpi-sub-label">Pricing Status:</span>
-                        <span id="val-price-rate" class="rate-status green-text">NOMINAL RATE</span>
+                        <span id="val-price-rate" class="rate-status">CONNECTING...</span>
                     </div>
                 </div>
                 <div class="kpi-footer progress-bar-container">
-                    <div class="progress-bar-fill pink" id="bar-price-tier" style="width: 45%;"></div>
+                    <div class="progress-bar-fill pink" id="bar-price-tier" style="width: 0%;"></div>
                 </div>
             </div>
 
@@ -160,19 +169,19 @@
                 </div>
                 <div class="kpi-body">
                     <div class="kpi-main-val">
-                        <span id="val-battery-soc" class="mono-value">54.2</span><span class="unit">%</span>
+                        <span id="val-battery-soc" class="mono-value">--.-</span><span class="unit">%</span>
                     </div>
                     <div class="kpi-sub-row">
                         <span class="kpi-sub-label">State:</span>
-                        <span id="val-battery-state" class="mono-value text-purple">CHARGING (+4.2 MW)</span>
+                        <span id="val-battery-state" class="mono-value">CONNECTING...</span>
                     </div>
                     <div class="kpi-sub-row">
                         <span class="kpi-sub-label">Grid Frequency:</span>
-                        <span id="val-grid-freq" class="mono-value">59.98 Hz</span>
+                        <span id="val-grid-freq" class="mono-value">--.-- Hz</span>
                     </div>
                 </div>
                 <div class="kpi-footer progress-bar-container">
-                    <div class="progress-bar-fill purple" id="bar-battery-soc" style="width: 54%;"></div>
+                    <div class="progress-bar-fill purple" id="bar-battery-soc" style="width: 0%;"></div>
                 </div>
             </div>
         </section>
