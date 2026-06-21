@@ -112,7 +112,7 @@ class SmartGridSimulator:
             elasticity_multiplier = 1.05  # 5% load expansion (Off-Peak surplus)
             
         noise = math.sin(self.current_time / 10.0) * 1.2 + (random.random() * 0.8 - 0.4)
-        scenario_multiplier = 1.2 if self.active_scenario == "heatwave" else 1.0
+        scenario_multiplier = 1.2 if self.active_scenario == "heatwave" else (0.22 if self.active_scenario == "theft" else 1.0)
         self.actual_load = max(10.0, ((self.base_load * scenario_multiplier) + temp_adjustment + noise) * elasticity_multiplier)
 
         # 3. Renewables outputs
@@ -192,13 +192,18 @@ class SmartGridSimulator:
 
         # Anomaly Detection Logic
         self.anomaly_type = None
-        if self.grid_frequency < 49.85 or self.grid_frequency > 50.15:
+        if self.active_scenario == "theft" or (self.actual_load < 0.35 * self.base_load and self.dynamic_price >= 5.00):
+            self.anomaly_type = "theft"
+        elif self.grid_frequency < 49.85 or self.grid_frequency > 50.15:
             self.anomaly_type = "frequency"
         elif self.actual_load > 1.35 * self.base_load or self.actual_load < 0.65 * self.base_load:
             self.anomaly_type = "load"
 
         # Sync visual classes (with Anomaly overrides)
-        if self.anomaly_type == "frequency":
+        if self.anomaly_type == "theft":
+            self.status_text = "⚠️ THEFT/TAMPER DETECTED"
+            self.status_class = "red"
+        elif self.anomaly_type == "frequency":
             self.status_text = "⚠️ FREQUENCY ANOMALY"
             self.status_class = "red"
         elif self.anomaly_type == "load":

@@ -389,10 +389,14 @@ function triggerAdvisoryLog(data) {
 
     // 1. Anomaly Recommendations
     if (data.anomaly_type) {
+        let textVal = `Critical anomaly detected: Sudden ${data.anomaly_type.toUpperCase()} shift. Dispatch secondary storage reserves immediately.`;
+        if (data.anomaly_type === "theft") {
+            textVal = "Tampering or bypass theft anomaly detected. Alerting field inspection teams and auditing meter nodes.";
+        }
         items.push({
             type: "warning",
             icon: "⚠️",
-            text: `Critical anomaly detected: Sudden ${data.anomaly_type.toUpperCase()} shift. Dispatch secondary storage reserves immediately.`
+            text: textVal
         });
     }
 

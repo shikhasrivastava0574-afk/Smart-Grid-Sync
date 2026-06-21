@@ -183,10 +183,11 @@ def create_report_pdf(output_path):
     pdf.cell(0, 8, "A. Theft & Tampering Detection (Anomaly Rules)", 0, 1, "L")
     pdf.set_font("helvetica", "", 10)
     pdf.multi_cell(0, 6,
-        "We implemented edge-based anomaly logic that scans telemetry logs in real time. Load anomalies are "
-        "flagged immediately if the actual consumption deviates past standard baseline bounds (exceeding 1.35x "
-        "or dropping below 0.65x of expected base demand). This maps to real-world smart meter alerts for line tapping, "
-        "unmetered consumption, and meter bypassing."
+        "We integrated an explicit theft anomaly detection rule. If the smart meter records consumption "
+        "dropping below 35% of the expected hourly base demand (without pricing incentives like off-peak rebates), "
+        "or if the operator activates the 'Tampering / Theft' hotkey, the system flags a 'theft' anomaly. "
+        "This triggers visual red pulsing alerts on dispatch paths and logs critical tamper alarms in the SQLite database, "
+        "matching real-world bypass and line tapping theft alert behaviors."
     )
     pdf.ln(3)
     
