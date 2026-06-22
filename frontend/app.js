@@ -92,7 +92,9 @@ const elements = {
     trendPeakTime: document.getElementById('trend-peak-time'),
     trendLoadStats: document.getElementById('trend-load-stats'),
     trendStability: document.getElementById('trend-stability'),
-    trendAnomalies: document.getElementById('trend-anomalies')
+    trendAnomalies: document.getElementById('trend-anomalies'),
+    trendTheftCount: document.getElementById('trend-theft-count'),
+    trendFreqCount: document.getElementById('trend-freq-count')
 };
 
 // SVG Settings & Dimensions
@@ -238,6 +240,12 @@ async function fetchGridTrends() {
             } else {
                 elements.trendAnomalies.className = "mono-value text-pink";
             }
+        }
+        if (elements.trendTheftCount) {
+            elements.trendTheftCount.textContent = data.theft_count !== undefined ? data.theft_count : 0;
+        }
+        if (elements.trendFreqCount) {
+            elements.trendFreqCount.textContent = data.freq_anomaly_count !== undefined ? data.freq_anomaly_count : 0;
         }
     } catch (err) {
         console.error("Trends fetch error:", err);

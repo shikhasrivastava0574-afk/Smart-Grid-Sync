@@ -391,6 +391,8 @@ body {
 .text-amber { color: var(--color-solar) !important; }
 .text-green { color: var(--color-wind) !important; }
 .text-purple { color: var(--color-battery) !important; }
+.text-blue { color: var(--color-load) !important; }
+.text-pink { color: var(--color-price) !important; }
 .red-text { color: var(--color-warning) !important; }
 .green-text { color: var(--color-success) !important; }
 

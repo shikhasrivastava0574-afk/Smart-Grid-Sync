@@ -273,8 +273,8 @@ def create_presentation(output_path, img1_path, img2_path):
     tf.word_wrap = True
     
     analytics = [
-        ("Statistical Anomaly Detection", "Scans telemetry in real-time. Grid frequency deviations (< 49.85 Hz or > 50.15 Hz) or load imbalances trigger a warning. Blinking red pulsing markers are drawn dynamically on frontend charts with diagnostic tooltips."),
-        ("24-Hour Historical Trends (/api/grid/trends)", "Aggregates SQLite historical logs to present daily metrics: Peak Demand Time, Average-to-Peak ratios, and Grid Stability Factor (frequency standard deviation rating percentage)."),
+        ("Statistical Anomaly & Theft Detection", "Scans telemetry in real-time. Detects grid frequency deviations (< 49.85 Hz or > 50.15 Hz), load imbalances, or bypass theft (abnormal load drops under high pricing). Blinking red pulsing markers are drawn dynamically on frontend charts with diagnostic tooltips."),
+        ("24-Hour Historical Trends (/api/grid/trends)", "Aggregates SQLite historical logs to present daily metrics: Peak Demand Time, Average-to-Peak ratios, Grid Stability Factor (frequency rating), and detailed theft vs. frequency anomaly counts."),
         ("Personalized Savings Advisor", "Calculates specific load-shedding and battery arbitrage rewards in Rupee values in real-time, displaying exact Rupee hourly savings rates on the advisory panel.")
     ]
     

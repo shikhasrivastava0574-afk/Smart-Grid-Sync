@@ -287,7 +287,10 @@ class SmartGridAPIHandler(BaseHTTPRequestHandler):
                 "avg_load": 0.0,
                 "peak_price": 0.0,
                 "stability_factor": 100.0,
-                "anomaly_count": 0
+                "anomaly_count": 0,
+                "theft_count": 0,
+                "freq_anomaly_count": 0,
+                "load_anomaly_count": 0
             }
         else:
             loads = [m["load"] for m in metrics]
@@ -308,6 +311,9 @@ class SmartGridAPIHandler(BaseHTTPRequestHandler):
             stability_factor = max(90.0, min(100.0, 100.0 - (std_freq / 0.5) * 100.0))
             
             anomaly_count = sum(1 for a in anomalies if a is not None)
+            theft_count = sum(1 for a in anomalies if a == "theft")
+            freq_anomaly_count = sum(1 for a in anomalies if a == "frequency")
+            load_anomaly_count = sum(1 for a in anomalies if a == "load")
 
             response_data = {
                 "peak_load": peak_load,
@@ -315,7 +321,10 @@ class SmartGridAPIHandler(BaseHTTPRequestHandler):
                 "avg_load": avg_load,
                 "peak_price": peak_price,
                 "stability_factor": stability_factor,
-                "anomaly_count": anomaly_count
+                "anomaly_count": anomaly_count,
+                "theft_count": theft_count,
+                "freq_anomaly_count": freq_anomaly_count,
+                "load_anomaly_count": load_anomaly_count
             }
 
         self.send_response(200)

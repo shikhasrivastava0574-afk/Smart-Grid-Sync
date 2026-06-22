@@ -164,13 +164,13 @@ def create_report_pdf(output_path):
     pdf.ln(4)
     
     pdf.set_font("helvetica", "B", 11)
-    pdf.cell(0, 8, "A. Statistical Anomaly Detection", 0, 1, "L")
+    pdf.cell(0, 8, "A. Statistical Anomaly & Theft Detection", 0, 1, "L")
     pdf.set_font("helvetica", "", 10)
     pdf.multi_cell(0, 6, 
-        "Telemetry is scanned in real-time. If grid frequency drifts past safety parameters (< 49.85 Hz or > 50.15 Hz) "
-        "or demand load deviates drastically from daily averages, an active anomaly is flagged. Blinking red "
-        "pulsing markers are drawn dynamically on the frontend SVG chart lines. Hovering over a marker pops up "
-        "detailed grid frequency and imbalance stats."
+        "Telemetry is scanned in real-time. If grid frequency drifts past safety parameters (< 49.85 Hz or > 50.15 Hz), "
+        "demand load deviates drastically from daily averages, or suspicious bypass theft is detected (sudden drop in "
+        "load during peak pricing), an active anomaly is flagged. Blinking red pulsing markers are drawn dynamically "
+        "on the frontend SVG chart lines with diagnostic hover tooltips."
     )
     pdf.ln(3)
     
@@ -180,7 +180,8 @@ def create_report_pdf(output_path):
     pdf.multi_cell(0, 6, 
         "Aggregates SQLite historical logs to present daily metrics directly on the dashboard panels: "
         "Peak Demand Time (e.g. 8:00 PM), Average vs. Peak Load ratios, Grid Stability Factor (evaluating "
-        "standard deviation of frequency deviations), and total anomaly counts over the last 24 hours."
+        "standard deviation of frequency deviations), and detailed anomaly totals (including theft and frequency counts) "
+        "over the last 24 hours."
     )
     pdf.ln(3)
 
