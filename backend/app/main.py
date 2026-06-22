@@ -82,8 +82,8 @@ def run_simulation_loop():
                 if step_data["minute"] % 10 == 0:
                     cursor.execute(
                         """
-                        INSERT INTO grid_metrics (time_str, minute, load, solar, wind, battery, price, frequency, anomaly_type)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        INSERT INTO grid_metrics (time_str, minute, load, solar, wind, battery, price, frequency, anomaly_type, signature, signature_status)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         """,
                         (
                             step_data["time_str"],
@@ -94,7 +94,9 @@ def run_simulation_loop():
                             step_data["battery"],
                             step_data["price"],
                             step_data["frequency"],
-                            step_data.get("anomaly_type")
+                            step_data.get("anomaly_type"),
+                            step_data.get("signature"),
+                            step_data.get("signature_status")
                         )
                     )
                     conn.commit()
@@ -235,7 +237,9 @@ class SmartGridAPIHandler(BaseHTTPRequestHandler):
             "carbon_saved": simulator.carbon_saved,
             "status_text": simulator.status_text,
             "status_class": simulator.status_class,
-            "anomaly_type": simulator.anomaly_type
+            "anomaly_type": simulator.anomaly_type,
+            "signature": getattr(simulator, "signature", ""),
+            "signature_status": getattr(simulator, "signature_status", "VALID")
         }
 
         self.send_response(200)
@@ -290,7 +294,8 @@ class SmartGridAPIHandler(BaseHTTPRequestHandler):
                 "anomaly_count": 0,
                 "theft_count": 0,
                 "freq_anomaly_count": 0,
-                "load_anomaly_count": 0
+                "load_anomaly_count": 0,
+                "cyberattack_count": 0
             }
         else:
             loads = [m["load"] for m in metrics]
@@ -314,6 +319,7 @@ class SmartGridAPIHandler(BaseHTTPRequestHandler):
             theft_count = sum(1 for a in anomalies if a == "theft")
             freq_anomaly_count = sum(1 for a in anomalies if a == "frequency")
             load_anomaly_count = sum(1 for a in anomalies if a == "load")
+            cyberattack_count = sum(1 for a in anomalies if a == "cyberattack")
 
             response_data = {
                 "peak_load": peak_load,
@@ -324,7 +330,8 @@ class SmartGridAPIHandler(BaseHTTPRequestHandler):
                 "anomaly_count": anomaly_count,
                 "theft_count": theft_count,
                 "freq_anomaly_count": freq_anomaly_count,
-                "load_anomaly_count": load_anomaly_count
+                "load_anomaly_count": load_anomaly_count,
+                "cyberattack_count": cyberattack_count
             }
 
         self.send_response(200)
@@ -383,7 +390,7 @@ class SmartGridAPIHandler(BaseHTTPRequestHandler):
 
     def handle_post_scenario(self, payload):
         scenario = payload.get("scenario", "normal")
-        if scenario not in ["normal", "heatwave", "cloudy", "storm", "congestion"]:
+        if scenario not in ["normal", "heatwave", "cloudy", "storm", "congestion", "theft", "cyberattack"]:
             self.send_error(400, "Invalid scenario")
             return
 
@@ -409,6 +416,14 @@ class SmartGridAPIHandler(BaseHTTPRequestHandler):
             simulator.temperature = 27.0
             simulator.cloud_cover = 40.0
             simulator.wind_speed = 5.0
+        elif scenario == "theft":
+            simulator.temperature = 25.0
+            simulator.cloud_cover = 20.0
+            simulator.wind_speed = 6.0
+        elif scenario == "cyberattack":
+            simulator.temperature = 26.0
+            simulator.cloud_cover = 30.0
+            simulator.wind_speed = 5.5
 
         self.send_response(200)
         self.send_header("Content-Type", "application/json")

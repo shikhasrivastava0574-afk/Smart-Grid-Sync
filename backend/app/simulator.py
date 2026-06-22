@@ -1,6 +1,8 @@
 import math
 import random
 from datetime import datetime
+import hmac
+import hashlib
 
 class SmartGridSimulator:
     def __init__(self):
@@ -42,6 +44,8 @@ class SmartGridSimulator:
         self.anomaly_type = None
         self.status_text = "GRID OPERATING STABLE"
         self.status_class = "green"
+        self.signature = ""
+        self.signature_status = "VALID"
 
     def format_time_str(self, minutes):
         display_min = minutes % 1440
@@ -199,8 +203,25 @@ class SmartGridSimulator:
         elif self.actual_load > 1.35 * self.base_load or self.actual_load < 0.65 * self.base_load:
             self.anomaly_type = "load"
 
+        # Cryptographic Signature (HMAC-SHA256) for Cyber Security
+        SECRET_KEY = b"grid-sync-secret-key-2026"
+        msg = f"{self.format_time_str(self.current_time)}|{self.actual_load:.4f}|{self.grid_frequency:.4f}|{self.dynamic_price:.4f}"
+        
+        if self.active_scenario == "cyberattack":
+            # Generate a signature for a modified load to simulate tampering
+            tampered_msg = f"{self.format_time_str(self.current_time)}|{self.actual_load + 20.0:.4f}|{self.grid_frequency:.4f}|{self.dynamic_price:.4f}"
+            self.signature = hmac.new(SECRET_KEY, tampered_msg.encode('utf-8'), hashlib.sha256).hexdigest()
+            self.signature_status = "INVALID"
+            self.anomaly_type = "cyberattack"
+        else:
+            self.signature = hmac.new(SECRET_KEY, msg.encode('utf-8'), hashlib.sha256).hexdigest()
+            self.signature_status = "VALID"
+
         # Sync visual classes (with Anomaly overrides)
-        if self.anomaly_type == "theft":
+        if self.anomaly_type == "cyberattack":
+            self.status_text = "🚨 SECURITY: HMAC MISMATCH"
+            self.status_class = "red"
+        elif self.anomaly_type == "theft":
             self.status_text = "⚠️ THEFT/TAMPER DETECTED"
             self.status_class = "red"
         elif self.anomaly_type == "frequency":
@@ -228,5 +249,7 @@ class SmartGridSimulator:
             "battery": self.battery_rate,
             "price": self.dynamic_price,
             "frequency": self.grid_frequency,
-            "anomaly_type": self.anomaly_type
+            "anomaly_type": self.anomaly_type,
+            "signature": self.signature,
+            "signature_status": self.signature_status
         }

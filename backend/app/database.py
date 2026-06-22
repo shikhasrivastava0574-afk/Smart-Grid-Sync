@@ -19,7 +19,9 @@ def init_db():
         battery REAL,
         price REAL,
         frequency REAL,
-        anomaly_type TEXT DEFAULT NULL
+        anomaly_type TEXT DEFAULT NULL,
+        signature TEXT DEFAULT NULL,
+        signature_status TEXT DEFAULT 'VALID'
     )
     """)
     conn.commit()

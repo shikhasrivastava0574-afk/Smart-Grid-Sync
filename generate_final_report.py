@@ -193,6 +193,16 @@ def create_report_pdf(output_path):
         "For example, when rates spike, it displays the specific Rupees/hour saved if the manager shaves "
         "15% of active demand. It also displays the hourly savings achieved by battery peak-shaving compared to grid energy."
     )
+    pdf.ln(3)
+
+    pdf.set_font("helvetica", "B", 11)
+    pdf.cell(0, 8, "D. Cryptographic HMAC Security Audit Ledger", 0, 1, "L")
+    pdf.set_font("helvetica", "", 10)
+    pdf.multi_cell(0, 6, 
+        "Each smart-meter telemetry payload is cryptographically signed using HMAC-SHA256 with a unique pre-shared secret key. "
+        "The SLDC backend verifies signatures upon packet arrival. If telemetry is spoofed or modified in transit, "
+        "the signature check fails, triggering an immediate security anomaly alert and warning log on the control room dashboard."
+    )
     
     # =========================================================================
     # PAGE 4: TECHNICAL DEPLOYMENTS & ENDPOINTS

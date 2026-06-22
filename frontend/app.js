@@ -94,7 +94,10 @@ const elements = {
     trendStability: document.getElementById('trend-stability'),
     trendAnomalies: document.getElementById('trend-anomalies'),
     trendTheftCount: document.getElementById('trend-theft-count'),
-    trendFreqCount: document.getElementById('trend-freq-count')
+    trendFreqCount: document.getElementById('trend-freq-count'),
+    trendCyberCount: document.getElementById('trend-cyber-count'),
+    securityBadge: document.getElementById('security-badge'),
+    securitySignature: document.getElementById('security-signature')
 };
 
 // SVG Settings & Dimensions
@@ -247,6 +250,9 @@ async function fetchGridTrends() {
         if (elements.trendFreqCount) {
             elements.trendFreqCount.textContent = data.freq_anomaly_count !== undefined ? data.freq_anomaly_count : 0;
         }
+        if (elements.trendCyberCount) {
+            elements.trendCyberCount.textContent = data.cyberattack_count !== undefined ? data.cyberattack_count : 0;
+        }
     } catch (err) {
         console.error("Trends fetch error:", err);
     }
@@ -365,6 +371,25 @@ function updateUIElements(data) {
         elements.valCarbonIntensity.className = "mono-value red-text";
     }
 
+    // 6. Security Audit Sync
+    if (elements.securityBadge) {
+        if (data.signature_status === "INVALID") {
+            elements.securityBadge.textContent = "TAMPER DETECTED (HMAC Mismatch)";
+            elements.securityBadge.className = "mono-value red-text";
+        } else {
+            elements.securityBadge.textContent = "SECURE (HMAC VALID)";
+            elements.securityBadge.className = "mono-value green-text";
+        }
+    }
+    if (elements.securitySignature) {
+        elements.securitySignature.textContent = data.signature || "N/A";
+        if (data.signature_status === "INVALID") {
+            elements.securitySignature.style.color = "var(--color-warning)";
+        } else {
+            elements.securitySignature.style.color = "#64748b";
+        }
+    }
+
     // Sync button toggles
     setBatteryButtonActive(data.battery_mode);
 
@@ -400,6 +425,8 @@ function triggerAdvisoryLog(data) {
         let textVal = `Critical anomaly detected: Sudden ${data.anomaly_type.toUpperCase()} shift. Dispatch secondary storage reserves immediately.`;
         if (data.anomaly_type === "theft") {
             textVal = "Tampering or bypass theft anomaly detected. Alerting field inspection teams and auditing meter nodes.";
+        } else if (data.anomaly_type === "cyberattack") {
+            textVal = "ALERT: HMAC signature mismatch detected in telemetry packets. Possible spoofing attack. Activating cryptographic firewall audit.";
         }
         items.push({
             type: "warning",
