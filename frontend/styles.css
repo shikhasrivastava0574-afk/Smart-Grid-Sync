@@ -387,14 +387,14 @@ body {
     gap: 4px;
 }
 
-/* Highlight text colors */
-.text-amber { color: var(--color-solar) !important; }
-.text-green { color: var(--color-wind) !important; }
-.text-purple { color: var(--color-battery) !important; }
-.text-blue { color: var(--color-load) !important; }
-.text-pink { color: var(--color-price) !important; }
-.red-text { color: var(--color-warning) !important; }
-.green-text { color: var(--color-success) !important; }
+/* Highlight text colors with premium glow effects */
+.text-amber { color: var(--color-solar) !important; text-shadow: 0 0 6px rgba(255, 184, 0, 0.15); }
+.text-green { color: var(--color-wind) !important; text-shadow: 0 0 6px rgba(0, 230, 118, 0.15); }
+.text-purple { color: var(--color-battery) !important; text-shadow: 0 0 6px rgba(179, 136, 255, 0.15); }
+.text-blue { color: var(--color-load) !important; text-shadow: 0 0 6px rgba(0, 240, 255, 0.15); }
+.text-pink { color: var(--color-price) !important; text-shadow: 0 0 6px rgba(255, 42, 109, 0.15); }
+.red-text { color: var(--color-warning) !important; text-shadow: 0 0 8px rgba(255, 94, 87, 0.3); }
+.green-text { color: var(--color-success) !important; text-shadow: 0 0 6px rgba(5, 196, 107, 0.15); }
 
 /* Footers progress bars */
 .progress-bar-container {
@@ -679,6 +679,35 @@ body {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    position: relative;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#panel-controls {
+    border-top: 3px solid rgba(0, 240, 255, 0.5);
+}
+#panel-controls:hover {
+    border-color: rgba(0, 240, 255, 0.25);
+    box-shadow: 0 12px 40px 0 rgba(0, 240, 255, 0.08);
+    transform: translateY(-2px);
+}
+
+#panel-ai-sandbox {
+    border-top: 3px solid rgba(179, 136, 255, 0.5);
+}
+#panel-ai-sandbox:hover {
+    border-color: rgba(179, 136, 255, 0.25);
+    box-shadow: 0 12px 40px 0 rgba(179, 136, 255, 0.08);
+    transform: translateY(-2px);
+}
+
+#panel-sustainability {
+    border-top: 3px solid rgba(5, 196, 107, 0.5);
+}
+#panel-sustainability:hover {
+    border-color: rgba(5, 196, 107, 0.25);
+    box-shadow: 0 12px 40px 0 rgba(5, 196, 107, 0.08);
+    transform: translateY(-2px);
 }
 
 .panel-header {
@@ -687,9 +716,13 @@ body {
 }
 
 .panel-header h3 {
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: #f1f5f9;
+    font-size: 1.12rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #94a3b8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.3px;
+    margin-bottom: 2px;
 }
 
 .panel-subtitle {
@@ -892,6 +925,61 @@ body {
     background: rgba(0, 240, 255, 0.08);
     color: var(--color-load);
     box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
+}
+
+.btn-scenario[data-scenario="normal"].active {
+    border-color: var(--color-success);
+    background: rgba(5, 196, 107, 0.12);
+    color: var(--color-success);
+    box-shadow: 0 0 10px rgba(5, 196, 107, 0.2);
+}
+.btn-scenario[data-scenario="heatwave"].active {
+    border-color: var(--color-warning);
+    background: rgba(255, 94, 87, 0.12);
+    color: var(--color-warning);
+    box-shadow: 0 0 10px rgba(255, 94, 87, 0.2);
+}
+.btn-scenario[data-scenario="cloudy"].active {
+    border-color: var(--color-neutral);
+    background: rgba(87, 95, 207, 0.12);
+    color: var(--color-neutral);
+    box-shadow: 0 0 10px rgba(87, 95, 207, 0.2);
+}
+.btn-scenario[data-scenario="storm"].active {
+    border-color: var(--color-battery);
+    background: rgba(179, 136, 255, 0.12);
+    color: var(--color-battery);
+    box-shadow: 0 0 10px rgba(179, 136, 255, 0.2);
+}
+.btn-scenario[data-scenario="congestion"].active {
+    border-color: var(--color-solar);
+    background: rgba(255, 184, 0, 0.12);
+    color: var(--color-solar);
+    box-shadow: 0 0 10px rgba(255, 184, 0, 0.2);
+}
+.btn-scenario[data-scenario="theft"].active {
+    border-color: var(--color-price);
+    background: rgba(255, 42, 109, 0.12);
+    color: var(--color-price);
+    box-shadow: 0 0 10px rgba(255, 42, 109, 0.2);
+}
+.btn-scenario[data-scenario="cyberattack"].active {
+    border-color: var(--color-warning);
+    background: rgba(255, 94, 87, 0.12);
+    color: var(--color-warning);
+    box-shadow: 0 0 12px rgba(255, 94, 87, 0.3);
+    animation: pulse-glow-cyber 1.5s infinite alternate;
+}
+
+@keyframes pulse-glow-cyber {
+    0% {
+        box-shadow: 0 0 4px rgba(255, 94, 87, 0.2);
+        border-color: rgba(255, 94, 87, 0.4);
+    }
+    100% {
+        box-shadow: 0 0 16px rgba(255, 94, 87, 0.5);
+        border-color: rgba(255, 94, 87, 1);
+    }
 }
 
 /* ==========================================================================
